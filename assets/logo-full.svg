@@ -3,13 +3,13 @@
   <style>
     .wordmark { font-family: 'Playfair Display', 'Times New Roman', Georgia, serif; }
     .sans { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; }
-    .the-label { font-size: 9px; letter-spacing: 0.4em; text-transform: uppercase; }
+    .the-label { font-size: 9px; letter-spacing: 0.4em; }
     .main-title { font-size: 36px; font-weight: 500; letter-spacing: -0.01em; }
     .tagline { font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.6; }
   </style>
   
-  <!-- THE -->
-  <text class="wordmark the-label" x="120" y="16" text-anchor="middle" fill="currentColor">THE</text>
+  <!-- the -->
+  <text class="wordmark the-label" x="120" y="16" text-anchor="middle" fill="currentColor">the</text>
   
   <!-- Dupe Edit -->
   <text class="wordmark main-title" x="120" y="50" text-anchor="middle" fill="currentColor">Dupe Edit</text>
@@ -18,5 +18,5 @@
   <line x1="70" y1="60" x2="170" y2="60" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
   
   <!-- Tagline -->
-  <text class="sans tagline" x="120" y="74" text-anchor="middle" fill="currentColor">LUXURY FINDS, CURATED</text>
+  <text class="sans tagline" x="120" y="74" text-anchor="middle" fill="currentColor">MAKING LUXURY ACCESSIBLE</text>
 </svg>

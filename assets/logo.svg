@@ -2,10 +2,9 @@
   <!-- The Dupe Edit — Primary Wordmark (Editorial Serif) -->
   <style>
     .wordmark { font-family: 'Playfair Display', 'Times New Roman', Georgia, serif; }
-    .the { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; }
+    .the { font-size: 11px; letter-spacing: 0.3em; }
     .dupe { font-size: 28px; font-weight: 500; letter-spacing: 0.02em; }
-    .edit { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; font-style: italic; }
   </style>
-  <text class="wordmark the" x="0" y="12" fill="currentColor">THE</text>
+  <text class="wordmark the" x="0" y="12" fill="currentColor">the</text>
   <text class="wordmark dupe" x="0" y="32" fill="currentColor">Dupe Edit</text>
 </svg>

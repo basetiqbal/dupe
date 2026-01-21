@@ -186,12 +186,12 @@ body {
 
 .logo-the {
   font-family: 'Playfair Display', var(--font-serif);
-  font-size: 0.5625rem;
+  font-size: 0.625rem;
   font-weight: 400;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
+  letter-spacing: 0.3em;
   color: var(--color-text-secondary);
   margin-bottom: 0.125rem;
+  font-style: italic;
 }
 
 .logo-main {

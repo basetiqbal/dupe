@@ -3,8 +3,8 @@
   <style>
     .wordmark { font-family: 'Playfair Display', 'Times New Roman', Georgia, serif; }
     .brand-name { font-size: 22px; font-weight: 500; letter-spacing: 0.01em; }
-    .brand-the { font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; }
+    .brand-the { font-size: 9px; letter-spacing: 0.25em; }
   </style>
-  <text class="wordmark brand-the" x="0" y="10" fill="currentColor">THE</text>
-  <text class="wordmark brand-name" x="32" y="22" fill="currentColor">Dupe Edit</text>
+  <text class="wordmark brand-the" x="0" y="10" fill="currentColor">the</text>
+  <text class="wordmark brand-name" x="24" y="22" fill="currentColor">Dupe Edit</text>
 </svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- The Dupe Edit — Icon Mark -->
+  <!-- Two overlapping circles representing original + dupe, with elegant D -->
+  
+  <!-- Left circle (original/luxury) - outline only -->
+  <circle cx="18" cy="24" r="14" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.4"/>
+  
+  <!-- Right circle (dupe/accessible) - filled subtle -->
+  <circle cx="30" cy="24" r="14" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.08"/>
+  
+  <!-- Center intersection accent -->
+  <path d="M 22 14 A 14 14 0 0 1 22 34 A 14 14 0 0 1 22 14" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.15"/>
+</svg>
