@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" fill="none">
+  <!-- TDE Monogram — Minimal Editorial Mark -->
+  <style>
+    .monogram { font-family: 'Playfair Display', 'Times New Roman', Georgia, serif; }
+    .mono-letter { font-size: 24px; font-weight: 500; }
+  </style>
+  <!-- Subtle border circle -->
+  <circle cx="30" cy="30" r="28" stroke="currentColor" stroke-width="1" fill="none" opacity="0.15"/>
+  <!-- TDE stacked elegantly -->
+  <text class="monogram mono-letter" x="30" y="26" text-anchor="middle" fill="currentColor" letter-spacing="0.1em" font-size="11">T</text>
+  <text class="monogram mono-letter" x="30" y="40" text-anchor="middle" fill="currentColor" letter-spacing="0.05em" font-size="16">DE</text>
+</svg>

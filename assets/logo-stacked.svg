@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 70" fill="none">
+  <!-- The Dupe Edit — Stacked Wordmark -->
+  <style>
+    .wordmark { font-family: 'Playfair Display', 'Times New Roman', Georgia, serif; }
+    .the-text { font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; }
+    .dupe-text { font-size: 32px; font-weight: 500; letter-spacing: -0.01em; }
+    .edit-text { font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; font-style: italic; }
+  </style>
+  <text class="wordmark the-text" x="80" y="14" text-anchor="middle" fill="currentColor">THE</text>
+  <text class="wordmark dupe-text" x="80" y="46" text-anchor="middle" fill="currentColor">Dupe Edit</text>
+  <text class="wordmark edit-text" x="80" y="62" text-anchor="middle" fill="currentColor">◆</text>
+</svg>

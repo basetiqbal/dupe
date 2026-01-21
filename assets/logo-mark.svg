@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
+  <!-- Editorial Mark — Magazine Cover Style -->
+  <!-- Elegant "D" with subtle editorial flourish -->
+  <style>
+    .mark { font-family: 'Playfair Display', 'Times New Roman', Georgia, serif; }
+  </style>
+  <!-- Outer square frame (subtle) -->
+  <rect x="2" y="2" width="36" height="36" stroke="currentColor" stroke-width="0.75" fill="none" opacity="0.2"/>
+  <!-- Inner elegant D -->
+  <text class="mark" x="20" y="29" text-anchor="middle" fill="currentColor" font-size="26" font-weight="500" font-style="italic">D</text>
+</svg>

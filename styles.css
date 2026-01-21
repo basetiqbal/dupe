@@ -176,18 +176,39 @@ body {
 }
 
 .logo {
-  font-family: var(--font-serif);
-  font-size: 1.875rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  transition: all var(--transition-base);
+  gap: 0;
+}
+
+.logo-the {
+  font-family: 'Playfair Display', var(--font-serif);
+  font-size: 0.5625rem;
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.125rem;
+}
+
+.logo-main {
+  font-family: 'Playfair Display', var(--font-serif);
+  font-size: 1.75rem;
   font-weight: 500;
   color: var(--color-text);
-  text-decoration: none;
-  letter-spacing: -0.02em;
-  transition: all var(--transition-base);
+  letter-spacing: -0.01em;
+  line-height: 1;
 }
 
 .logo:hover {
-  color: var(--color-accent-warm);
   transform: translateY(-1px);
+}
+
+.logo:hover .logo-main {
+  color: var(--color-accent-warm);
 }
 
 /* Theme Toggle */
@@ -989,8 +1010,12 @@ body {
     right: auto;
   }
   
-  .logo {
-    font-size: 1.5rem;
+  .logo-main {
+    font-size: 1.375rem;
+  }
+  
+  .logo-the {
+    font-size: 0.5rem;
   }
   
   .search-section {

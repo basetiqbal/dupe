@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 28" fill="none">
+  <!-- The Dupe Edit — Horizontal Inline (Header Use) -->
+  <style>
+    .wordmark { font-family: 'Playfair Display', 'Times New Roman', Georgia, serif; }
+    .brand-name { font-size: 22px; font-weight: 500; letter-spacing: 0.01em; }
+    .brand-the { font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; }
+  </style>
+  <text class="wordmark brand-the" x="0" y="10" fill="currentColor">THE</text>
+  <text class="wordmark brand-name" x="32" y="22" fill="currentColor">Dupe Edit</text>
+</svg>
