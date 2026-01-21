@@ -22,6 +22,7 @@
     loadingDelayMs: 400, // Minimum loading time for perceived performance
     themeStorageKey: 'dupe-theme',
     maxAutocompleteResults: 6,
+    feedbackEmail: 'hello@thedupeedit.com',
     imagePlaceholder: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAiIGhlaWdodD0iODAiIGZpbGw9IiNGNUYwRTgiLz48cGF0aCBkPSJNMzIgNDhMMzYgNDRMNDAgNDhMNDggMzZMNTYgNDgiIHN0cm9rZT0iI0M0QTY3QSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48Y2lyY2xlIGN4PSIzNiIgY3k9IjMyIiByPSI0IiBmaWxsPSIjQzRBNjdBIi8+PC9zdmc+',
   };
 
@@ -310,26 +311,82 @@
   }
 
   /**
-   * Create image element with lazy loading and fallback
+   * Parse price string to get numeric value (extracts highest number from range)
+   * Returns null if price cannot be parsed
+   */
+  function parsePrice(priceStr) {
+    if (!priceStr || typeof priceStr !== 'string') return null;
+    
+    // Extract all numbers (handles $40-$65, $325 (2.4 oz), etc.)
+    const numbers = priceStr.match(/\$?([\d,]+(?:\.\d{2})?)/g);
+    if (!numbers || numbers.length === 0) return null;
+    
+    // Get the highest price (for ranges, use upper bound)
+    const prices = numbers.map(n => parseFloat(n.replace(/[$,]/g, '')));
+    return Math.max(...prices);
+  }
+
+  /**
+   * Validate dupe price against original price
+   * Returns object with isValid, shouldFlag, and message
+   */
+  function validateDupePrice(dupePrice, originalPrice) {
+    const dupeParsed = parsePrice(dupePrice);
+    const originalParsed = parsePrice(originalPrice);
+    
+    // If we can't parse either price, flag for review
+    if (dupeParsed === null || originalParsed === null) {
+      return { isValid: true, shouldFlag: true, message: 'Price unavailable' };
+    }
+    
+    // Dupe should never exceed original
+    if (dupeParsed > originalParsed) {
+      return { isValid: false, shouldFlag: true, message: 'Price exceeds original' };
+    }
+    
+    return { isValid: true, shouldFlag: false, message: null };
+  }
+
+  /**
+   * Create image element with lazy loading, skeleton loader, and graceful fallback
    */
   function createImageElement(src, alt, className = '') {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'image-wrapper loading';
+    
     const img = document.createElement('img');
     img.alt = alt;
     img.loading = 'lazy';
     img.className = className;
+    img.setAttribute('crossorigin', 'anonymous');
     
     if (src) {
       img.src = src;
+      
+      img.onload = function() {
+        wrapper.classList.remove('loading');
+        wrapper.classList.add('loaded');
+      };
+      
       img.onerror = function() {
+        // Try without crossorigin first (some CDNs don't support CORS)
+        if (this.hasAttribute('crossorigin')) {
+          this.removeAttribute('crossorigin');
+          this.src = src;
+          return;
+        }
         this.src = CONFIG.imagePlaceholder;
-        this.parentElement?.classList.add('no-image');
+        wrapper.classList.remove('loading');
+        wrapper.classList.add('no-image');
       };
     } else {
       img.src = CONFIG.imagePlaceholder;
-      img.parentElement?.classList.add('no-image');
+      wrapper.classList.remove('loading');
+      wrapper.classList.add('no-image');
     }
     
-    return img;
+    wrapper.appendChild(img);
+    return wrapper;
   }
 
   /**
@@ -364,11 +421,21 @@
   /**
    * Render a single dupe card
    */
-  function renderDupeCard(dupe) {
+  function renderDupeCard(dupe, originalPrice = null) {
     const matchInfo = getMatchLevel(dupe.matchScore || 75);
+    
+    // Validate price against original
+    const priceValidation = originalPrice 
+      ? validateDupePrice(dupe.priceRange, originalPrice)
+      : { isValid: true, shouldFlag: false };
     
     const card = document.createElement('article');
     card.className = 'dupe-card';
+    
+    // Add flag class if price is invalid or should be flagged
+    if (!priceValidation.isValid) {
+      card.classList.add('price-flagged');
+    }
     
     let differencesHTML = '';
     if (dupe.differences) {
@@ -386,9 +453,24 @@
     
     const retailerLinksHTML = renderRetailerLinks(dupe.retailers);
     
+    // Build price display with validation flag
+    let priceHTML = '';
+    if (!priceValidation.isValid) {
+      // Don't show price if it exceeds original (data error)
+      priceHTML = `<p class="dupe-price dupe-price-flagged" title="${escapeHTML(priceValidation.message)}">
+        <span class="price-flag-icon">⚠</span> Price unavailable
+      </p>`;
+    } else if (priceValidation.shouldFlag) {
+      // Show price but with subtle flag
+      priceHTML = `<p class="dupe-price" title="Price may vary">${escapeHTML(dupe.priceRange || 'Price varies')}</p>`;
+    } else {
+      priceHTML = `<p class="dupe-price">${escapeHTML(dupe.priceRange)}</p>`;
+    }
+    
+    // Image with enhanced error handling
     const imageHTML = dupe.image 
-      ? `<img src="${escapeHTML(dupe.image)}" alt="${escapeHTML(dupe.name)}" loading="lazy" onerror="this.src='${CONFIG.imagePlaceholder}'; this.parentElement.classList.add('no-image');">`
-      : `<span>No image</span>`;
+      ? `<img src="${escapeHTML(dupe.image)}" alt="${escapeHTML(dupe.name)}" loading="lazy" crossorigin="anonymous" onerror="this.removeAttribute('crossorigin'); if(this.src !== '${CONFIG.imagePlaceholder}') { this.src='${CONFIG.imagePlaceholder}'; this.parentElement.classList.add('no-image'); }">`
+      : `<div class="image-placeholder-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>`;
     
     card.innerHTML = `
       <div class="dupe-card-header">
@@ -399,7 +481,7 @@
             <h4 class="dupe-name">${escapeHTML(dupe.name)}</h4>
             <p class="dupe-brand">${escapeHTML(dupe.brand)}</p>
           </div>
-          <p class="dupe-price">${escapeHTML(dupe.priceRange)}</p>
+          ${priceHTML}
         </div>
       </div>
       <div class="dupe-card-body">
@@ -441,13 +523,23 @@
     elements.originalPrice.textContent = product.price ? `Retail: ${product.price}` : '';
     elements.originalDescription.textContent = product.description || '';
     
-    // Add product image
+    // Add product image with enhanced error handling
     if (product.image) {
       const img = document.createElement('img');
       img.src = product.image;
       img.alt = `${product.brand} ${product.name}`;
       img.loading = 'lazy';
+      img.setAttribute('crossorigin', 'anonymous');
+      img.onload = function() {
+        elements.originalProductImage.classList.add('loaded');
+      };
       img.onerror = function() {
+        // Retry without CORS first
+        if (this.hasAttribute('crossorigin')) {
+          this.removeAttribute('crossorigin');
+          this.src = product.image;
+          return;
+        }
         this.src = CONFIG.imagePlaceholder;
         elements.originalProductImage.classList.add('no-image');
       };
@@ -478,9 +570,9 @@
       (b.matchScore || 75) - (a.matchScore || 75)
     );
     
-    // Render each dupe card
+    // Render each dupe card with price validation against original
     for (const dupe of sortedDupes) {
-      const card = renderDupeCard(dupe);
+      const card = renderDupeCard(dupe, product.price);
       elements.dupesList.appendChild(card);
     }
     
@@ -714,6 +806,28 @@
     }
   }
 
+  /**
+   * Handle request dupe button click
+   * Opens email with pre-filled subject and body
+   */
+  function handleRequestDupe(event) {
+    event.preventDefault();
+    
+    const searchedTerm = elements.searchInput.value.trim() || 'a product';
+    const subject = encodeURIComponent(`Dupe Request: ${searchedTerm}`);
+    const body = encodeURIComponent(
+      `Hi Dupe Edit team!\n\n` +
+      `I'd love to see dupes for: ${searchedTerm}\n\n` +
+      `Additional details (optional):\n` +
+      `- Brand: \n` +
+      `- Product type: \n` +
+      `- Price range I'm looking for: \n\n` +
+      `Thanks!`
+    );
+    
+    window.location.href = `mailto:${CONFIG.feedbackEmail}?subject=${subject}&body=${body}`;
+  }
+
   // ============================================
   // Initialization
   // ============================================
@@ -748,6 +862,12 @@
     elements.suggestionChips.forEach(chip => {
       chip.addEventListener('click', handleSuggestionClick);
     });
+    
+    // Request dupe button handler
+    const requestDupeBtn = document.getElementById('request-dupe-btn');
+    if (requestDupeBtn) {
+      requestDupeBtn.addEventListener('click', handleRequestDupe);
+    }
     
     // Handle browser navigation
     window.addEventListener('popstate', handlePopState);
