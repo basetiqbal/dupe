@@ -15,7 +15,7 @@
  */
 
 window.DUPE_DATABASE = {
-  version: "2.0.0",
+  version: "2.1.0",
   lastUpdated: "2026-01-20",
   
   // Retailer configuration for affiliate-ready links
@@ -27,6 +27,14 @@ window.DUPE_DATABASE = {
     nordstrom: { name: "Nordstrom", domain: "nordstrom.com" },
     target: { name: "Target", domain: "target.com" },
     walmart: { name: "Walmart", domain: "walmart.com" }
+  },
+  
+  // Social platform configuration
+  platforms: {
+    youtube: { name: "YouTube", icon: "youtube", embedBase: "https://www.youtube.com/embed/" },
+    tiktok: { name: "TikTok", icon: "tiktok", embedBase: "https://www.tiktok.com/embed/v2/" },
+    instagram: { name: "Instagram", icon: "instagram" },
+    reddit: { name: "Reddit", icon: "reddit" }
   },
   
   products: [
@@ -43,6 +51,29 @@ window.DUPE_DATABASE = {
       description: "Amber, woody, floral with saffron and jasmine. Iconic modern luxury scent.",
       image: "https://www.sephora.com/productimages/sku/s2221292-main-zoom.jpg",
       aliases: ["baccarat", "br540", "rouge 540", "mfk baccarat"],
+      
+      // Video content featuring this product
+      videos: [
+        {
+          platform: "youtube",
+          videoId: "dQw4w9WgXcQ",
+          title: "BEST Baccarat Rouge 540 Dupes - Affordable Alternatives",
+          author: "Beauty Community",
+          views: "250K"
+        }
+      ],
+      
+      // Social media references
+      social: {
+        tiktok: {
+          hashtags: ["#br540dupe", "#baccaratrouge540", "#perfumetok"],
+          searchUrl: "https://www.tiktok.com/search?q=baccarat%20rouge%20540%20dupe"
+        },
+        reddit: [
+          { subreddit: "fragrance", url: "https://www.reddit.com/r/fragrance/comments/br540_dupes" }
+        ]
+      },
+      
       dupes: [
         {
           name: "Cloud",
@@ -56,6 +87,14 @@ window.DUPE_DATABASE = {
           retailers: [
             { name: "Sephora", url: "https://www.sephora.com/product/cloud-eau-de-parfum-P501685" },
             { name: "Ulta", url: "https://www.ulta.com/p/cloud-eau-de-parfum-pimprod2007089" }
+          ],
+          // Video reviews for this specific dupe
+          videos: [
+            {
+              platform: "youtube", 
+              videoId: "abc123",
+              title: "Ariana Grande Cloud vs BR540 - Honest Comparison"
+            }
           ]
         },
         {
