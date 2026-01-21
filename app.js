@@ -265,10 +265,74 @@
   // ============================================
 
   /**
-   * Show loading state
+   * Source search configuration for real-time feel
+   */
+  const SOURCES = [
+    { id: 'database', name: 'Our curated database', delay: 200 },
+    { id: 'youtube', name: 'YouTube reviews', delay: 400 },
+    { id: 'tiktok', name: 'TikTok trends', delay: 300 },
+    { id: 'reddit', name: 'Reddit community', delay: 350 },
+    { id: 'prices', name: 'Price comparison', delay: 250 },
+  ];
+
+  /**
+   * Show loading state with animated source search
    */
   function showLoading() {
     elements.loading.classList.remove('hidden');
+    
+    // Reset all source items
+    const sourceItems = document.querySelectorAll('.source-item');
+    sourceItems.forEach(item => {
+      item.classList.remove('searching', 'complete', 'found');
+    });
+  }
+
+  /**
+   * Animate source search progress
+   */
+  async function animateSourceSearch(product) {
+    const loadingText = document.getElementById('loading-text');
+    const sourceItems = document.querySelectorAll('.source-item');
+    
+    // Track which sources found data
+    const foundSources = {
+      database: !!product,
+      youtube: product?.videos?.length > 0,
+      tiktok: product?.social?.tiktok,
+      reddit: product?.social?.reddit?.length > 0,
+      prices: product?.dupes?.length > 0,
+    };
+    
+    // Animate each source sequentially
+    for (let i = 0; i < SOURCES.length; i++) {
+      const source = SOURCES[i];
+      const item = document.querySelector(`.source-item[data-source="${source.id}"]`);
+      
+      if (item) {
+        // Start searching this source
+        item.classList.add('searching');
+        loadingText.textContent = `Checking ${source.name.toLowerCase()}...`;
+        
+        // Wait for "search" to complete
+        await new Promise(resolve => setTimeout(resolve, source.delay));
+        
+        // Mark as complete or found
+        item.classList.remove('searching');
+        if (foundSources[source.id]) {
+          item.classList.add('found');
+        } else {
+          item.classList.add('complete');
+        }
+      }
+    }
+    
+    // Final message
+    loadingText.textContent = product 
+      ? 'Compiling your edit...' 
+      : 'Wrapping up...';
+    
+    await new Promise(resolve => setTimeout(resolve, 200));
   }
 
   /**
@@ -688,6 +752,118 @@
   }
 
   /**
+   * Render results with staggered animation for real-time feel
+   */
+  async function renderResultsAnimated(product) {
+    // Clear previous results
+    elements.dupesList.innerHTML = '';
+    elements.noResults.classList.add('hidden');
+    elements.originalProductImage.innerHTML = '';
+    
+    // Clear original content
+    const originalContentEl = document.getElementById('original-content');
+    if (originalContentEl) {
+      originalContentEl.innerHTML = '';
+    }
+    
+    if (!product) {
+      elements.noResults.classList.remove('hidden');
+      elements.originalName.textContent = elements.searchInput.value;
+      elements.originalBrand.textContent = '';
+      elements.originalPrice.textContent = '';
+      elements.originalDescription.textContent = '';
+      elements.originalProductImage.innerHTML = `<img src="${CONFIG.imagePlaceholder}" alt="No product found">`;
+      elements.originalProductImage.classList.add('no-image');
+      elements.dupesCount.textContent = '';
+      showResultsView();
+      return;
+    }
+    
+    // Render original product info (instant)
+    elements.originalName.textContent = product.name;
+    elements.originalBrand.textContent = product.brand;
+    elements.originalPrice.textContent = product.price ? `Retail: ${product.price}` : '';
+    elements.originalDescription.textContent = product.description || '';
+    
+    // Add product image
+    if (product.image) {
+      const img = document.createElement('img');
+      img.src = product.image;
+      img.alt = `${product.brand} ${product.name}`;
+      img.loading = 'lazy';
+      img.setAttribute('crossorigin', 'anonymous');
+      img.onload = function() {
+        elements.originalProductImage.classList.add('loaded');
+      };
+      img.onerror = function() {
+        if (this.hasAttribute('crossorigin')) {
+          this.removeAttribute('crossorigin');
+          this.src = product.image;
+          return;
+        }
+        this.src = CONFIG.imagePlaceholder;
+        elements.originalProductImage.classList.add('no-image');
+      };
+      elements.originalProductImage.appendChild(img);
+      elements.originalProductImage.classList.remove('no-image');
+    } else {
+      const img = document.createElement('img');
+      img.src = CONFIG.imagePlaceholder;
+      img.alt = 'Product image';
+      elements.originalProductImage.appendChild(img);
+      elements.originalProductImage.classList.add('no-image');
+    }
+    
+    // Switch to results view first
+    showResultsView();
+    
+    // Check if there are dupes
+    if (!product.dupes || product.dupes.length === 0) {
+      elements.noResults.classList.remove('hidden');
+      elements.dupesCount.textContent = '';
+      return;
+    }
+    
+    // Render dupes count with animation
+    const count = product.dupes.length;
+    elements.dupesCount.textContent = `${count} curated alternative${count !== 1 ? 's' : ''}`;
+    
+    // Sort by match score
+    const sortedDupes = [...product.dupes].sort((a, b) => 
+      (b.matchScore || 75) - (a.matchScore || 75)
+    );
+    
+    // Render each dupe card with staggered animation
+    for (let i = 0; i < sortedDupes.length; i++) {
+      const dupe = sortedDupes[i];
+      const card = renderDupeCard(dupe, product.price);
+      card.classList.add('animate-in');
+      card.style.animationDelay = `${i * 100}ms`;
+      elements.dupesList.appendChild(card);
+    }
+    
+    // Render video and social content after a brief delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    if (originalContentEl) {
+      let contentHTML = '';
+      
+      if (product.videos && product.videos.length > 0) {
+        contentHTML += renderVideoSection(product.videos, product.name);
+      }
+      
+      if (product.social) {
+        contentHTML += renderSocialLinks(product.social, product.name);
+      }
+      
+      if (contentHTML) {
+        originalContentEl.innerHTML = contentHTML;
+        originalContentEl.classList.add('animate-in');
+      }
+    }
+  }
+
+  /**
    * Escape HTML to prevent XSS
    */
   function escapeHTML(str) {
@@ -854,24 +1030,18 @@
       return;
     }
     
-    // Show loading
+    // Show loading with source animation
     showLoading();
     
-    // Minimum loading time for perceived performance
-    const startTime = Date.now();
-    
-    // Perform search
+    // Perform search (instant, but we'll animate the display)
     const result = searchDupes(query);
     
-    // Calculate remaining time for minimum loading display
-    const elapsed = Date.now() - startTime;
-    const remaining = Math.max(0, CONFIG.loadingDelayMs - elapsed);
+    // Animate the source search experience
+    await animateSourceSearch(result);
     
-    // Wait remaining time then show results
-    await new Promise(resolve => setTimeout(resolve, remaining));
-    
+    // Hide loading and show results with staggered animation
     hideLoading();
-    renderResults(result);
+    renderResultsAnimated(result);
     
     // Update URL with search query
     const url = new URL(window.location);

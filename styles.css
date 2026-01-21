@@ -1214,6 +1214,15 @@ body {
   z-index: 100;
 }
 
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 320px;
+  width: 100%;
+  padding: 0 var(--space-md);
+}
+
 .loading-spinner {
   width: 36px;
   height: 36px;
@@ -1232,6 +1241,164 @@ body {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   font-style: italic;
+  text-align: center;
+}
+
+/* Source Search Animation */
+.source-search {
+  margin-top: var(--space-xl);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.source-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  opacity: 0.4;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+}
+
+.source-item.searching {
+  opacity: 1;
+  transform: translateX(0);
+  border-color: var(--color-accent-warm);
+  background: var(--color-cream);
+}
+
+[data-theme="dark"] .source-item.searching {
+  background: var(--color-bg-alt);
+}
+
+.source-item.complete {
+  opacity: 0.7;
+  transform: translateX(0);
+}
+
+.source-item.found {
+  opacity: 1;
+  transform: translateX(0);
+  border-color: var(--color-match-high-text);
+}
+
+.source-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.source-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.source-item[data-source="youtube"] .source-icon {
+  color: #ff0000;
+}
+
+.source-item[data-source="tiktok"] .source-icon {
+  color: #000;
+}
+
+[data-theme="dark"] .source-item[data-source="tiktok"] .source-icon {
+  color: #fff;
+}
+
+.source-item[data-source="reddit"] .source-icon {
+  color: #ff4500;
+}
+
+.source-name {
+  flex: 1;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.source-status {
+  font-size: 0.6875rem;
+  color: var(--color-text-tertiary);
+  min-width: 60px;
+  text-align: right;
+}
+
+.source-item.searching .source-status::after {
+  content: 'Searching';
+  animation: ellipsis 1.5s infinite;
+}
+
+.source-item.complete .source-status::after {
+  content: '✓ Done';
+  color: var(--color-text-tertiary);
+}
+
+.source-item.found .source-status::after {
+  content: '✓ Found';
+  color: var(--color-match-high-text);
+}
+
+@keyframes ellipsis {
+  0% { content: 'Searching'; }
+  25% { content: 'Searching.'; }
+  50% { content: 'Searching..'; }
+  75% { content: 'Searching...'; }
+}
+
+/* Staggered entry animation for results */
+.dupe-card.animate-in {
+  animation: slideInUp 0.4s ease forwards;
+  opacity: 0;
+}
+
+.original-content.animate-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Source badge on results */
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 2px var(--space-sm);
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.source-badge svg {
+  width: 10px;
+  height: 10px;
 }
 
 /* === Footer === */
