@@ -488,14 +488,6 @@
     // Return the live data so we can merge it
     return liveData;
   }
-    
-    // Final message
-    loadingText.textContent = product 
-      ? 'Compiling your edit...' 
-      : 'Wrapping up...';
-    
-    await new Promise(resolve => setTimeout(resolve, 200));
-  }
 
   /**
    * Hide loading state
