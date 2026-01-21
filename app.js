@@ -1,5 +1,8 @@
 /**
- * THE DUPE EDIT — Simple, Functional Search
+ * THE DUPE EDIT — Real-Time Dupe Search
+ * 
+ * Primary: Live internet search (YouTube, Reddit, TikTok)
+ * Secondary: Curated database matches (if available)
  */
 
 (function() {
@@ -11,10 +14,8 @@
   const CONFIG = {
     minSearchLength: 2,
     debounceMs: 150,
-    maxAutocomplete: 8,
     apiEndpoint: '/api/search',
     feedbackEmail: 'hello@thedupeedit.com',
-    placeholder: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAiIGhlaWdodD0iODAiIGZpbGw9IiNGNUYwRTgiLz48cGF0aCBkPSJNMzIgNDhMMzYgNDRMNDAgNDhMNDggMzZMNTYgNDgiIHN0cm9rZT0iI0M0QTY3QSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48Y2lyY2xlIGN4PSIzNiIgY3k9IjMyIiByPSI0IiBmaWxsPSIjQzRBNjdBIi8+PC9zdmc+',
   };
 
   // ============================================
@@ -46,7 +47,6 @@
   };
 
   let debounceTimer = null;
-  let activeIndex = -1;
 
   // ============================================
   // Theme
@@ -65,87 +65,8 @@
   }
 
   // ============================================
-  // Search Logic
-  // ============================================
-  
-  function normalize(text) {
-    return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, ' ').trim();
-  }
-
-  function similarity(query, target) {
-    const q = normalize(query);
-    const t = normalize(target);
-    if (t === q) return 1.0;
-    if (t.includes(q)) return 0.9;
-    
-    const qWords = q.split(/\s+/).filter(w => w.length > 1);
-    const tWords = t.split(/\s+/);
-    let matches = 0;
-    for (const qw of qWords) {
-      for (const tw of tWords) {
-        if (tw === qw || tw.includes(qw) || qw.includes(tw)) {
-          matches++;
-          break;
-        }
-      }
-    }
-    return qWords.length ? Math.min(matches / qWords.length, 0.85) : 0;
-  }
-
-  function searchDatabase(query) {
-    if (!window.DUPE_DATABASE || query.length < CONFIG.minSearchLength) return null;
-    
-    let best = null, bestScore = 0;
-    
-    for (const product of window.DUPE_DATABASE.products) {
-      const scores = [
-        similarity(query, product.name),
-        similarity(query, product.brand) * 0.7,
-        similarity(query, product.brand + ' ' + product.name),
-      ];
-      if (product.aliases) {
-        for (const a of product.aliases) {
-          scores.push(similarity(query, a));
-        }
-      }
-      const score = Math.max.apply(null, scores);
-      if (score > 0) console.log('[DEBUG] Score for', product.brand, product.name, ':', score);
-      if (score > bestScore && score >= 0.4) {
-        bestScore = score;
-        best = product;
-      }
-    }
-    console.log('[DEBUG] Best match:', best ? (best.brand + ' ' + best.name) : 'null', '| Score:', bestScore);
-    return best;
-  }
-
-  function getAutocomplete(query) {
-    if (!window.DUPE_DATABASE || query.length < CONFIG.minSearchLength) return [];
-    
-    const results = [];
-    for (const product of window.DUPE_DATABASE.products) {
-      const scores = [
-        similarity(query, product.name),
-        similarity(query, product.brand) * 0.8,
-        similarity(query, product.brand + ' ' + product.name),
-      ];
-      if (product.aliases) {
-        for (const a of product.aliases) {
-          scores.push(similarity(query, a));
-        }
-      }
-      const score = Math.max.apply(null, scores);
-      if (score >= 0.3) results.push({ product: product, score: score });
-    }
-    
-    results.sort(function(a, b) { return b.score - a.score; });
-    return results.slice(0, CONFIG.maxAutocomplete).map(function(r) { return r.product; });
-  }
-
-  // ============================================
   // API
   // ============================================
-  
   async function fetchLiveData(query) {
     try {
       const res = await fetch(CONFIG.apiEndpoint + '?q=' + encodeURIComponent(query));
@@ -157,9 +78,34 @@
   }
 
   // ============================================
-  // Rendering
+  // Local Database (Optional Enhancement)
   // ============================================
-  
+  function searchDatabase(query) {
+    if (!window.DUPE_DATABASE || query.length < CONFIG.minSearchLength) return null;
+    
+    const q = query.toLowerCase().trim();
+    
+    for (const product of window.DUPE_DATABASE.products) {
+      // Exact or close match on name/brand/aliases
+      const targets = [
+        product.name.toLowerCase(),
+        product.brand.toLowerCase(),
+        (product.brand + ' ' + product.name).toLowerCase(),
+        ...(product.aliases || []).map(a => a.toLowerCase())
+      ];
+      
+      for (const t of targets) {
+        if (t === q || t.includes(q) || q.includes(t)) {
+          return product;
+        }
+      }
+    }
+    return null;
+  }
+
+  // ============================================
+  // Rendering Helpers
+  // ============================================
   function escapeHTML(str) {
     if (!str) return '';
     const div = document.createElement('div');
@@ -167,9 +113,23 @@
     return div.innerHTML;
   }
 
+  function formatViews(num) {
+    if (!num) return '';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M views';
+    if (num >= 1000) return (num / 1000).toFixed(0) + 'K views';
+    return num + ' views';
+  }
+
+  function formatDuration(seconds) {
+    if (!seconds) return '';
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
   function showLoading(msg) {
     els.loading.classList.remove('hidden');
-    els.loadingText.textContent = msg || 'Finding dupes...';
+    els.loadingText.textContent = msg || 'Searching the web for dupes...';
   }
 
   function hideLoading() {
@@ -189,342 +149,290 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function renderImage(container, src, alt) {
-    container.innerHTML = '';
-    container.classList.remove('no-image');
-    var img = document.createElement('img');
-    img.alt = alt;
-    img.loading = 'lazy';
+  // ============================================
+  // Render YouTube Results
+  // ============================================
+  function renderYouTubeCard(video) {
+    const card = document.createElement('article');
+    card.className = 'dupe-card youtube-card';
     
-    if (src) {
-      img.src = src;
-      img.onerror = function() {
-        this.src = CONFIG.placeholder;
-        container.classList.add('no-image');
-      };
-    } else {
-      img.src = CONFIG.placeholder;
-      container.classList.add('no-image');
-    }
-    container.appendChild(img);
-  }
-
-  function renderRetailers(retailers) {
-    if (!retailers || !retailers.length) return '';
-    
-    var html = '<div class="dupe-retailers"><p class="dupe-retailers-label">Shop at</p><div class="dupe-retailers-list">';
-    for (var i = 0; i < retailers.length; i++) {
-      var r = retailers[i];
-      html += '<a href="' + escapeHTML(r.url) + '" class="dupe-retailer-link" target="_blank" rel="noopener">' +
-        escapeHTML(r.name) +
-        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>';
-    }
-    html += '</div></div>';
-    return html;
-  }
-
-  function getMatchLabel(score) {
-    if (score >= 85) return { cls: 'high', label: 'Very Close Match' };
-    if (score >= 70) return { cls: 'medium', label: 'Good Match' };
-    return { cls: 'low', label: 'Similar Vibe' };
-  }
-
-  function renderDupeCard(dupe) {
-    var match = getMatchLabel(dupe.matchScore || 75);
-    var card = document.createElement('article');
-    card.className = 'dupe-card';
-    
-    var imgSrc = dupe.image || '';
-    var tagsHTML = '';
-    if (dupe.bestFor) {
-      for (var i = 0; i < dupe.bestFor.length; i++) {
-        tagsHTML += '<span class="dupe-tag">' + escapeHTML(dupe.bestFor[i]) + '</span>';
-      }
-    }
-    
-    var diffHTML = '';
-    if (dupe.differences) {
-      diffHTML = '<div class="dupe-differences"><p class="dupe-differences-label">Key Differences</p><p class="dupe-differences-text">' + escapeHTML(dupe.differences) + '</p></div>';
-    }
-    
-    card.innerHTML = 
-      '<div class="dupe-card-header">' +
-        '<div class="dupe-card-image' + (!imgSrc ? ' no-image' : '') + '">' +
-          '<img src="' + (imgSrc || CONFIG.placeholder) + '" alt="' + escapeHTML(dupe.name) + '" loading="lazy" onerror="this.src=\'' + CONFIG.placeholder + '\'; this.parentElement.classList.add(\'no-image\');">' +
-        '</div>' +
-        '<div class="dupe-card-main">' +
-          '<div class="dupe-card-info">' +
-            '<span class="match-score ' + match.cls + '">' + match.label + '</span>' +
-            '<h4 class="dupe-name">' + escapeHTML(dupe.name) + '</h4>' +
-            '<p class="dupe-brand">' + escapeHTML(dupe.brand) + '</p>' +
-          '</div>' +
-          '<p class="dupe-price">' + escapeHTML(dupe.priceRange || 'Price varies') + '</p>' +
-        '</div>' +
-      '</div>' +
-      '<div class="dupe-card-body">' +
-        '<p class="dupe-reason">' + escapeHTML(dupe.reason) + '</p>' +
-        (tagsHTML ? '<div class="dupe-meta">' + tagsHTML + '</div>' : '') +
-        diffHTML +
-        renderRetailers(dupe.retailers) +
-      '</div>';
+    card.innerHTML = `
+      <a href="${escapeHTML(video.url)}" target="_blank" rel="noopener" class="youtube-link">
+        <div class="youtube-thumbnail">
+          ${video.thumbnail ? `<img src="${escapeHTML(video.thumbnail)}" alt="${escapeHTML(video.title)}" loading="lazy">` : ''}
+          ${video.duration ? `<span class="youtube-duration">${formatDuration(video.duration)}</span>` : ''}
+        </div>
+        <div class="youtube-info">
+          <span class="platform-badge youtube-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2c-.3-1-1-1.8-2-2.1C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.5.6c-1 .3-1.7 1.1-2 2.1C0 8.1 0 12 0 12s0 3.9.5 5.8c.3 1 1 1.8 2 2.1 1.9.6 9.5.6 9.5.6s7.6 0 9.5-.6c1-.3 1.7-1.1 2-2.1.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.5 15.5v-7l6.4 3.5-6.4 3.5z"/></svg>
+            YouTube
+          </span>
+          <h4 class="youtube-title">${escapeHTML(video.title)}</h4>
+          <p class="youtube-meta">${escapeHTML(video.author)} ${video.views ? '• ' + formatViews(video.views) : ''}</p>
+        </div>
+      </a>
+    `;
     
     return card;
   }
 
-  function renderResults(product, liveData) {
+  // ============================================
+  // Render Reddit Results
+  // ============================================
+  function renderRedditCard(post) {
+    const card = document.createElement('article');
+    card.className = 'dupe-card reddit-card';
+    
+    card.innerHTML = `
+      <a href="${escapeHTML(post.url)}" target="_blank" rel="noopener" class="reddit-link">
+        <div class="reddit-info">
+          <span class="platform-badge reddit-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.74c.69 0 1.25.56 1.25 1.25a1.25 1.25 0 0 1-2.5.06l-2.6-.55-.8 3.75c1.83.07 3.48.63 4.68 1.49.3-.31.73-.5 1.2-.5.97 0 1.76.8 1.76 1.76 0 .72-.43 1.33-1.01 1.61a3.11 3.11 0 0 1 .04.52c0 2.7-3.13 4.87-7 4.87-3.88 0-7-2.17-7-4.87 0-.18 0-.36.04-.53A1.75 1.75 0 0 1 4.03 12a1.76 1.76 0 0 1 2.96-1.28 8.35 8.35 0 0 1 4.68-1.49l.9-4.17.02-.03a.42.42 0 0 1 .48-.33l2.89.62a1.25 1.25 0 0 1 1.05-.58zM9.25 12a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5zm5.5 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5zm-5.47 3.99a.33.33 0 0 0-.23.1.33.33 0 0 0 0 .47c.58.58 1.42.87 2.96.87s2.38-.29 2.96-.87a.33.33 0 0 0-.46-.47c-.44.44-1.13.67-2.5.67-1.38 0-2.06-.23-2.5-.67a.33.33 0 0 0-.23-.1z"/></svg>
+            r/${escapeHTML(post.subreddit)}
+          </span>
+          <h4 class="reddit-title">${escapeHTML(post.title)}</h4>
+          <p class="reddit-meta">${post.score} upvotes • ${post.comments} comments</p>
+        </div>
+      </a>
+    `;
+    
+    return card;
+  }
+
+  // ============================================
+  // Render Curated Dupe (from local database)
+  // ============================================
+  function renderCuratedDupe(dupe) {
+    const card = document.createElement('article');
+    card.className = 'dupe-card curated-card';
+    
+    const matchLabel = dupe.matchScore >= 85 ? 'Very Close Match' : dupe.matchScore >= 70 ? 'Good Match' : 'Similar Vibe';
+    const matchClass = dupe.matchScore >= 85 ? 'high' : dupe.matchScore >= 70 ? 'medium' : 'low';
+    
+    let retailersHTML = '';
+    if (dupe.retailers && dupe.retailers.length) {
+      retailersHTML = '<div class="dupe-retailers"><p class="dupe-retailers-label">Shop:</p><div class="dupe-retailers-list">';
+      dupe.retailers.forEach(r => {
+        retailersHTML += `<a href="${escapeHTML(r.url)}" class="dupe-retailer-link" target="_blank" rel="noopener">${escapeHTML(r.name)}</a>`;
+      });
+      retailersHTML += '</div></div>';
+    }
+    
+    card.innerHTML = `
+      <div class="curated-header">
+        <span class="platform-badge curated-badge">✓ Curated Pick</span>
+        <span class="match-score ${matchClass}">${matchLabel}</span>
+      </div>
+      <div class="curated-content">
+        ${dupe.image ? `<img src="${escapeHTML(dupe.image)}" alt="${escapeHTML(dupe.name)}" class="curated-image" loading="lazy">` : ''}
+        <div class="curated-info">
+          <h4 class="curated-name">${escapeHTML(dupe.name)}</h4>
+          <p class="curated-brand">${escapeHTML(dupe.brand)}</p>
+          <p class="curated-price">${escapeHTML(dupe.priceRange || 'Price varies')}</p>
+          <p class="curated-reason">${escapeHTML(dupe.reason)}</p>
+          ${retailersHTML}
+        </div>
+      </div>
+    `;
+    
+    return card;
+  }
+
+  // ============================================
+  // Main Render Function
+  // ============================================
+  function renderResults(query, liveData, curatedProduct) {
     els.dupesList.innerHTML = '';
     els.noResults.classList.add('hidden');
     els.originalContent.innerHTML = '';
     
-    if (!product) {
+    // Set search query as the "product"
+    els.originalName.textContent = query;
+    els.originalBrand.textContent = '';
+    els.originalPrice.textContent = '';
+    els.originalImage.innerHTML = '';
+    
+    // If we have a curated match, show its details
+    if (curatedProduct) {
+      els.originalName.textContent = curatedProduct.name;
+      els.originalBrand.textContent = curatedProduct.brand;
+      els.originalPrice.textContent = curatedProduct.price ? 'Retail: ' + curatedProduct.price : '';
+      els.originalDesc.textContent = curatedProduct.description || '';
+      if (curatedProduct.image) {
+        els.originalImage.innerHTML = `<img src="${escapeHTML(curatedProduct.image)}" alt="${escapeHTML(curatedProduct.name)}" loading="lazy">`;
+      }
+    } else {
+      els.originalDesc.textContent = 'Showing live results from across the web';
+    }
+    
+    let hasResults = false;
+    let resultCount = 0;
+    
+    // Render curated dupes first (if available)
+    if (curatedProduct && curatedProduct.dupes && curatedProduct.dupes.length) {
+      const curatedSection = document.createElement('div');
+      curatedSection.className = 'results-section-group';
+      curatedSection.innerHTML = '<h4 class="results-section-title">✨ Our Curated Picks</h4>';
+      
+      curatedProduct.dupes.forEach(dupe => {
+        curatedSection.appendChild(renderCuratedDupe(dupe));
+        resultCount++;
+      });
+      
+      els.dupesList.appendChild(curatedSection);
+      hasResults = true;
+    }
+    
+    // Render YouTube results
+    if (liveData && liveData.sources && liveData.sources.youtube && liveData.sources.youtube.results.length) {
+      const ytSection = document.createElement('div');
+      ytSection.className = 'results-section-group';
+      ytSection.innerHTML = '<h4 class="results-section-title">📺 YouTube Reviews</h4>';
+      
+      liveData.sources.youtube.results.forEach(video => {
+        ytSection.appendChild(renderYouTubeCard(video));
+        resultCount++;
+      });
+      
+      els.dupesList.appendChild(ytSection);
+      hasResults = true;
+    }
+    
+    // Render Reddit results
+    if (liveData && liveData.sources && liveData.sources.reddit && liveData.sources.reddit.results.length) {
+      const redditSection = document.createElement('div');
+      redditSection.className = 'results-section-group';
+      redditSection.innerHTML = '<h4 class="results-section-title">💬 Reddit Discussions</h4>';
+      
+      liveData.sources.reddit.results.forEach(post => {
+        redditSection.appendChild(renderRedditCard(post));
+        resultCount++;
+      });
+      
+      els.dupesList.appendChild(redditSection);
+      hasResults = true;
+    }
+    
+    // TikTok search link (always show)
+    if (liveData && liveData.sources && liveData.sources.tiktok && liveData.sources.tiktok.info) {
+      const tiktokSection = document.createElement('div');
+      tiktokSection.className = 'results-section-group';
+      tiktokSection.innerHTML = `
+        <h4 class="results-section-title">🎵 TikTok</h4>
+        <a href="${escapeHTML(liveData.sources.tiktok.info.searchUrl)}" target="_blank" rel="noopener" class="tiktok-search-link">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+          Search TikTok for "${escapeHTML(query)} dupe"
+        </a>
+        <div class="tiktok-hashtags">
+          ${liveData.sources.tiktok.info.hashtags.map(h => `<span class="tiktok-hashtag">${escapeHTML(h)}</span>`).join('')}
+        </div>
+      `;
+      els.dupesList.appendChild(tiktokSection);
+      hasResults = true;
+    }
+    
+    // Google suggestions for related searches
+    if (liveData && liveData.sources && liveData.sources.suggestions && liveData.sources.suggestions.results.length) {
+      const suggestSection = document.createElement('div');
+      suggestSection.className = 'results-section-group suggestions-group';
+      suggestSection.innerHTML = `
+        <h4 class="results-section-title">🔍 Related Searches</h4>
+        <div class="related-searches">
+          ${liveData.sources.suggestions.results.slice(0, 6).map(s => 
+            `<button class="suggestion-chip live-chip" data-query="${escapeHTML(s)}">${escapeHTML(s)}</button>`
+          ).join('')}
+        </div>
+      `;
+      els.dupesList.appendChild(suggestSection);
+    }
+    
+    // Update count
+    els.dupesCount.textContent = hasResults ? `${resultCount} result${resultCount !== 1 ? 's' : ''} found` : '';
+    
+    // Show no results message if nothing found
+    if (!hasResults) {
       els.noResults.classList.remove('hidden');
-      els.originalName.textContent = els.searchInput.value;
-      els.originalBrand.textContent = '';
-      els.originalPrice.textContent = '';
-      els.originalDesc.textContent = '';
-      renderImage(els.originalImage, null, 'No product found');
-      els.dupesCount.textContent = '';
-      
-      // Show live suggestions if available
-      if (liveData && liveData.sources && liveData.sources.suggestions && liveData.sources.suggestions.results && liveData.sources.suggestions.results.length) {
-        var suggestions = liveData.sources.suggestions.results.slice(0, 5);
-        var sugHTML = '<div class="live-suggestions"><p class="live-suggestions-label">Try searching for:</p><div class="live-suggestions-list">';
-        for (var i = 0; i < suggestions.length; i++) {
-          sugHTML += '<button class="suggestion-chip live-chip" data-query="' + escapeHTML(suggestions[i]) + '">' + escapeHTML(suggestions[i]) + '</button>';
-        }
-        sugHTML += '</div></div>';
-        els.originalContent.innerHTML = sugHTML;
-      }
-      
-      showResults();
-      return;
-    }
-    
-    // Render original product
-    els.originalName.textContent = product.name;
-    els.originalBrand.textContent = product.brand;
-    els.originalPrice.textContent = product.price ? 'Retail: ' + product.price : '';
-    els.originalDesc.textContent = product.description || '';
-    renderImage(els.originalImage, product.image, product.brand + ' ' + product.name);
-    
-    // Render dupes
-    if (!product.dupes || !product.dupes.length) {
-      els.noResults.classList.remove('hidden');
-      els.dupesCount.textContent = '';
-      showResults();
-      return;
-    }
-    
-    els.dupesCount.textContent = product.dupes.length + ' curated alternative' + (product.dupes.length !== 1 ? 's' : '');
-    
-    var sorted = product.dupes.slice().sort(function(a, b) { return (b.matchScore || 75) - (a.matchScore || 75); });
-    for (var i = 0; i < sorted.length; i++) {
-      els.dupesList.appendChild(renderDupeCard(sorted[i]));
-    }
-    
-    // Add live TikTok/Reddit links if available
-    if (liveData) {
-      var contentHTML = '';
-      
-      if (liveData.sources && liveData.sources.tiktok && liveData.sources.tiktok.info && liveData.sources.tiktok.info.searchUrl) {
-        contentHTML += '<a href="' + escapeHTML(liveData.sources.tiktok.info.searchUrl) + '" class="live-link" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>See TikTok reviews</a>';
-      }
-      
-      if (liveData.sources && liveData.sources.reddit && liveData.sources.reddit.results && liveData.sources.reddit.results.length) {
-        contentHTML += '<a href="' + escapeHTML(liveData.sources.reddit.results[0].url) + '" class="live-link" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>Reddit discussion</a>';
-      }
-      
-      if (contentHTML) {
-        els.originalContent.innerHTML = '<div class="live-links">' + contentHTML + '</div>';
-      }
     }
     
     showResults();
   }
 
   // ============================================
-  // Autocomplete
-  // ============================================
-  
-  function showAutocomplete(items) {
-    els.autocomplete.innerHTML = '';
-    activeIndex = -1;
-    
-    if (!items.length) {
-      els.autocomplete.classList.add('hidden');
-      return;
-    }
-    
-    for (var i = 0; i < items.length; i++) {
-      var product = items[i];
-      var li = document.createElement('li');
-      li.className = 'autocomplete-item';
-      li.dataset.index = i;
-      
-      li.innerHTML = '<div class="autocomplete-item-info"><span class="autocomplete-item-name">' + escapeHTML(product.name) + '</span><span class="autocomplete-item-brand">' + escapeHTML(product.brand) + '</span></div><span class="autocomplete-item-category">' + escapeHTML(product.category) + '</span>';
-      
-      (function(p) {
-        li.addEventListener('click', function() { selectAutocomplete(p); });
-      })(product);
-      
-      (function(idx) {
-        li.addEventListener('mouseenter', function() { setActiveAutocomplete(idx); });
-      })(i);
-      
-      els.autocomplete.appendChild(li);
-    }
-    
-    els.autocomplete.classList.remove('hidden');
-  }
-
-  function hideAutocomplete() {
-    els.autocomplete.classList.add('hidden');
-    activeIndex = -1;
-  }
-
-  function setActiveAutocomplete(index) {
-    var items = els.autocomplete.querySelectorAll('.autocomplete-item');
-    for (var i = 0; i < items.length; i++) {
-      items[i].classList.toggle('active', i === index);
-    }
-    activeIndex = index;
-  }
-
-  function selectAutocomplete(product) {
-    els.searchInput.value = product.brand + ' ' + product.name;
-    hideAutocomplete();
-    els.searchForm.dispatchEvent(new Event('submit'));
-  }
-
-  // ============================================
   // Event Handlers
   // ============================================
-  
   async function handleSearch(e) {
     e.preventDefault();
-    hideAutocomplete();
     
-    var query = els.searchInput.value.trim();
+    const query = els.searchInput.value.trim();
     if (query.length < CONFIG.minSearchLength) return;
     
-    showLoading();
+    showLoading('Searching the web for "' + query + '" dupes...');
     
-    // Search local database and fetch live data in parallel
-    var localResult = searchDatabase(query);
-    console.log('[DEBUG] Query:', query, '| Local result:', localResult ? (localResult.brand + ' ' + localResult.name) : 'null');
-    var liveData = await fetchLiveData(query);
+    // Search local database (bonus) and fetch live data (primary) in parallel
+    const curatedProduct = searchDatabase(query);
+    const liveData = await fetchLiveData(query);
     
     hideLoading();
-    renderResults(localResult, liveData);
+    renderResults(query, liveData, curatedProduct);
     
     // Update URL
-    var url = new URL(window.location);
+    const url = new URL(window.location);
     url.searchParams.set('q', query);
     history.pushState({}, '', url);
   }
 
   function handleInput() {
     clearTimeout(debounceTimer);
-    var query = els.searchInput.value.trim();
-    
-    if (query.length < CONFIG.minSearchLength) {
-      hideAutocomplete();
-      return;
-    }
-    
-    debounceTimer = setTimeout(function() {
-      var suggestions = getAutocomplete(query);
-      showAutocomplete(suggestions);
-    }, CONFIG.debounceMs);
-  }
-
-  function handleKeydown(e) {
-    var items = els.autocomplete.querySelectorAll('.autocomplete-item');
-    if (els.autocomplete.classList.contains('hidden') || !items.length) return;
-    
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setActiveAutocomplete(activeIndex < items.length - 1 ? activeIndex + 1 : 0);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setActiveAutocomplete(activeIndex > 0 ? activeIndex - 1 : items.length - 1);
-    } else if (e.key === 'Enter' && activeIndex >= 0) {
-      e.preventDefault();
-      var suggestions = getAutocomplete(els.searchInput.value);
-      if (suggestions[activeIndex]) selectAutocomplete(suggestions[activeIndex]);
-    } else if (e.key === 'Escape') {
-      hideAutocomplete();
-    }
+    // No autocomplete for now - just let them search
   }
 
   function handleChipClick(e) {
-    var query = e.target.dataset.query;
+    const query = e.target.dataset.query;
     if (query) {
       els.searchInput.value = query;
       els.searchForm.dispatchEvent(new Event('submit'));
     }
   }
 
-  function handleRequestDupe(e) {
-    e.preventDefault();
-    var term = els.searchInput.value.trim() || 'a product';
-    var subject = encodeURIComponent('Dupe Request: ' + term);
-    var body = encodeURIComponent('Hi! I would love to see dupes for: ' + term + '\n\nThanks!');
-    window.location.href = 'mailto:' + CONFIG.feedbackEmail + '?subject=' + subject + '&body=' + body;
-  }
-
   // ============================================
   // Initialize
   // ============================================
-  
   function init() {
     initTheme();
-    
-    if (!window.DUPE_DATABASE) {
-      console.error('Database not loaded');
-      return;
-    }
     
     // Event listeners
     els.searchForm.addEventListener('submit', handleSearch);
     els.searchInput.addEventListener('input', handleInput);
-    els.searchInput.addEventListener('keydown', handleKeydown);
-    els.searchInput.addEventListener('focus', handleInput);
     els.backButton.addEventListener('click', showSearch);
     els.themeToggle.addEventListener('click', toggleTheme);
     
     document.addEventListener('click', function(e) {
-      if (!els.searchForm.contains(e.target)) hideAutocomplete();
-      // Handle dynamic chip clicks
       if (e.target.classList.contains('suggestion-chip') || e.target.classList.contains('live-chip')) {
         handleChipClick(e);
       }
     });
     
-    els.chips.forEach(function(chip) { chip.addEventListener('click', handleChipClick); });
-    
-    var requestBtn = $('#request-dupe-btn');
-    if (requestBtn) requestBtn.addEventListener('click', handleRequestDupe);
+    els.chips.forEach(chip => chip.addEventListener('click', handleChipClick));
     
     // Handle URL query on load
-    var urlQuery = new URL(window.location).searchParams.get('q');
+    const urlQuery = new URL(window.location).searchParams.get('q');
     if (urlQuery) {
       els.searchInput.value = urlQuery;
       handleSearch(new Event('submit'));
     }
     
     window.addEventListener('popstate', function() {
-      var q = new URL(window.location).searchParams.get('q');
+      const q = new URL(window.location).searchParams.get('q');
       if (q) {
         els.searchInput.value = q;
-        renderResults(searchDatabase(q), null);
+        handleSearch(new Event('submit'));
       } else {
         showSearch();
       }
     });
     
     els.searchInput.focus();
-    console.log('Dupe Edit loaded. ' + window.DUPE_DATABASE.products.length + ' products.');
+    console.log('Dupe Edit loaded. Real-time web search enabled.');
   }
 
   if (document.readyState === 'loading') {

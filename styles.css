@@ -1813,3 +1813,279 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================
+   Live Search Results — YouTube, Reddit, TikTok
+   ============================================ */
+
+.results-section-group {
+  margin-bottom: var(--space-xl);
+}
+
+.results-section-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+/* YouTube Cards */
+.youtube-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.youtube-link {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--transition-fast);
+}
+
+.youtube-link:hover {
+  background: var(--color-bg-alt);
+}
+
+.youtube-thumbnail {
+  position: relative;
+  flex-shrink: 0;
+  width: 160px;
+  aspect-ratio: 16/9;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-bg-alt);
+}
+
+.youtube-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.youtube-duration {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+}
+
+.youtube-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+.youtube-title {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.youtube-meta {
+  font-size: 0.8125rem;
+  color: var(--color-text-tertiary);
+  margin: 0;
+}
+
+/* Reddit Cards */
+.reddit-card {
+  padding: 0;
+}
+
+.reddit-link {
+  display: block;
+  padding: var(--space-md);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--transition-fast);
+}
+
+.reddit-link:hover {
+  background: var(--color-bg-alt);
+}
+
+.reddit-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.reddit-title {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.reddit-meta {
+  font-size: 0.8125rem;
+  color: var(--color-text-tertiary);
+  margin: 0;
+}
+
+/* Platform Badges */
+.platform-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-xs);
+}
+
+.youtube-badge {
+  background: #ff000015;
+  color: #cc0000;
+}
+
+.reddit-badge {
+  background: #ff450015;
+  color: #ff4500;
+}
+
+.curated-badge {
+  background: var(--color-sparkle);
+  color: #fff;
+}
+
+/* Curated Cards */
+.curated-card {
+  padding: var(--space-md);
+}
+
+.curated-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.curated-content {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.curated-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-alt);
+  flex-shrink: 0;
+}
+
+.curated-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.curated-name {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--color-text);
+  margin: 0 0 var(--space-xs);
+}
+
+.curated-brand {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-xs);
+}
+
+.curated-price {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-accent-warm);
+  margin: 0 0 var(--space-sm);
+}
+
+.curated-reason {
+  font-size: 0.8125rem;
+  color: var(--color-text-tertiary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* TikTok Search Link */
+.tiktok-search-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+  background: linear-gradient(135deg, #00f2ea08, #ff004408);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.tiktok-search-link:hover {
+  background: linear-gradient(135deg, #00f2ea15, #ff004415);
+  border-color: #ff0044;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tiktok-search-link svg {
+  color: #ff0044;
+}
+
+/* Related Searches */
+.related-searches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.suggestions-group {
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border-light);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .youtube-link {
+    flex-direction: column;
+  }
+  
+  .youtube-thumbnail {
+    width: 100%;
+  }
+  
+  .curated-content {
+    flex-direction: column;
+  }
+  
+  .curated-image {
+    width: 100%;
+    height: 150px;
+  }
+}
