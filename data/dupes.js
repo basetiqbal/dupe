@@ -15,8 +15,19 @@
  */
 
 window.DUPE_DATABASE = {
-  version: "1.0.0",
+  version: "2.0.0",
   lastUpdated: "2026-01-20",
+  
+  // Retailer configuration for affiliate-ready links
+  retailers: {
+    sephora: { name: "Sephora", domain: "sephora.com" },
+    ulta: { name: "Ulta", domain: "ulta.com" },
+    amazon: { name: "Amazon", domain: "amazon.com" },
+    fragrancenet: { name: "FragranceNet", domain: "fragrancenet.com" },
+    nordstrom: { name: "Nordstrom", domain: "nordstrom.com" },
+    target: { name: "Target", domain: "target.com" },
+    walmart: { name: "Walmart", domain: "walmart.com" }
+  },
   
   products: [
     // ============================================
@@ -30,6 +41,7 @@ window.DUPE_DATABASE = {
       subcategory: "eau de parfum",
       price: "$325 (2.4 oz)",
       description: "Amber, woody, floral with saffron and jasmine. Iconic modern luxury scent.",
+      image: "https://www.sephora.com/productimages/sku/s2221292-main-zoom.jpg",
       aliases: ["baccarat", "br540", "rouge 540", "mfk baccarat"],
       dupes: [
         {
@@ -39,7 +51,12 @@ window.DUPE_DATABASE = {
           matchScore: 82,
           reason: "Shares the dreamy, sweet amber DNA with similar lavender blossom and musk notes. The closest mainstream dupe available.",
           differences: "Less complex dry-down, lighter sillage, and missing the distinctive burnt sugar/caramel facet of the original.",
-          bestFor: ["Beginners", "Budget-conscious", "Everyday wear"]
+          bestFor: ["Beginners", "Budget-conscious", "Everyday wear"],
+          image: "https://www.sephora.com/productimages/sku/s2183633-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/cloud-eau-de-parfum-P501685" },
+            { name: "Ulta", url: "https://www.ulta.com/p/cloud-eau-de-parfum-pimprod2007089" }
+          ]
         },
         {
           name: "Burberry Her Intense",
@@ -48,7 +65,12 @@ window.DUPE_DATABASE = {
           matchScore: 72,
           reason: "Similar amber-berry sweetness with a warm, cozy base. More accessible price point for a designer option.",
           differences: "Fruitier opening, less woody depth. More conventionally feminine presentation.",
-          bestFor: ["Designer alternative", "Berry lovers", "Fall/Winter"]
+          bestFor: ["Designer alternative", "Berry lovers", "Fall/Winter"],
+          image: "https://www.sephora.com/productimages/sku/s2543364-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/burberry-her-intense-eau-de-parfum-P502015" },
+            { name: "Nordstrom", url: "https://www.nordstrom.com/s/burberry-her-intense-eau-de-parfum/5600044" }
+          ]
         },
         {
           name: "Extrait de Parfum",
@@ -57,7 +79,11 @@ window.DUPE_DATABASE = {
           matchScore: 78,
           reason: "Specifically formulated as a BR540 alternative. Captures the saffron-amber accord well.",
           differences: "Shorter longevity, less projection. Clean but not as nuanced.",
-          bestFor: ["Direct comparison seekers", "Testing before investing"]
+          bestFor: ["Direct comparison seekers", "Testing before investing"],
+          image: "https://cdn.shopify.com/s/files/1/0264/3669/6938/products/AmberyMarshmallowEdp_square.jpg",
+          retailers: [
+            { name: "Dossier", url: "https://dfrfrn.com/" }
+          ]
         },
         {
           name: "Instant Crush",
@@ -66,7 +92,12 @@ window.DUPE_DATABASE = {
           matchScore: 75,
           reason: "Niche quality at fraction of price. Similar amber-sandalwood warmth with good performance.",
           differences: "Heavier, more linear. Works better in cold weather.",
-          bestFor: ["Niche explorers", "Longevity seekers", "Cold weather"]
+          bestFor: ["Niche explorers", "Longevity seekers", "Cold weather"],
+          image: "https://www.sephora.com/productimages/sku/s2578311-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/mancera-instant-crush-eau-de-parfum-P502779" },
+            { name: "FragranceNet", url: "https://www.fragrancenet.com/perfume/mancera/mancera-instant-crush" }
+          ]
         }
       ]
     },
@@ -78,6 +109,7 @@ window.DUPE_DATABASE = {
       subcategory: "eau de parfum", 
       price: "$395 (1.7 oz)",
       description: "Boozy black cherry, almond, and tonka bean. Seductive and gourmand.",
+      image: "https://www.sephora.com/productimages/sku/s2278383-main-zoom.jpg",
       aliases: ["tom ford cherry", "tf lost cherry"],
       dupes: [
         {
@@ -87,7 +119,11 @@ window.DUPE_DATABASE = {
           matchScore: 80,
           reason: "Excellent niche alternative with similar boozy cherry and almond notes. Edgier, more unique take.",
           differences: "More smoky/leathery. Less sweet, more unisex.",
-          bestFor: ["Niche collectors", "Those who find TF too sweet"]
+          bestFor: ["Niche collectors", "Those who find TF too sweet"],
+          image: "https://www.luckyscent.com/images/productImages/525x525/room1015_cherrypunk_edp.jpg",
+          retailers: [
+            { name: "Luckyscent", url: "https://www.luckyscent.com/product/67504/cherry-punk-by-room-1015" }
+          ]
         },
         {
           name: "Dark Cherry",
@@ -96,7 +132,10 @@ window.DUPE_DATABASE = {
           matchScore: 68,
           reason: "Surprisingly close opening with cherry-almond accord. Incredible value for the similarity.",
           differences: "Much shorter longevity (2-3 hours). Less complex, more synthetic feel.",
-          bestFor: ["Budget explorers", "Testing the vibe", "Layering"]
+          bestFor: ["Budget explorers", "Testing the vibe", "Layering"],
+          retailers: [
+            { name: "Zara", url: "https://www.zara.com/us/en/dark-cherry-edp-100-ml-p20150039.html" }
+          ]
         },
         {
           name: "Cherry Smoothie",
@@ -105,7 +144,10 @@ window.DUPE_DATABASE = {
           matchScore: 75,
           reason: "Designed specifically as a Lost Cherry alternative. Solid performance for the price.",
           differences: "Sweeter, less boozy. More playful than seductive.",
-          bestFor: ["Direct dupe seekers", "Sweet scent lovers"]
+          bestFor: ["Direct dupe seekers", "Sweet scent lovers"],
+          retailers: [
+            { name: "ALT Fragrances", url: "https://altfragrances.com/products/cherry-smash" }
+          ]
         }
       ]
     },
@@ -117,6 +159,7 @@ window.DUPE_DATABASE = {
       subcategory: "eau de parfum",
       price: "$335 (2.5 oz)",
       description: "Turkish rose, lychee, peony, and vanilla. Romantic and feminine.",
+      image: "https://www.sephora.com/productimages/sku/s2312992-main-zoom.jpg",
       aliases: ["pdm delina", "parfums marly delina"],
       dupes: [
         {
@@ -126,7 +169,12 @@ window.DUPE_DATABASE = {
           matchScore: 72,
           reason: "Similar rosy-fruity sweetness with a designer pedigree. More accessible romantic floral.",
           differences: "Less complex, more linear rose. Missing the distinctive lychee note.",
-          bestFor: ["Rose lovers", "Designer preference", "Everyday elegance"]
+          bestFor: ["Rose lovers", "Designer preference", "Everyday elegance"],
+          image: "https://www.sephora.com/productimages/sku/s2735671-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/lancome-la-vie-est-belle-rose-extraordinaire-P507885" },
+            { name: "Ulta", url: "https://www.ulta.com/p/la-vie-est-belle-rose-extraordinaire-eau-de-parfum-pimprod2035691" }
+          ]
         },
         {
           name: "Delicate Rose",
@@ -135,7 +183,10 @@ window.DUPE_DATABASE = {
           matchScore: 76,
           reason: "Formulated specifically as a Delina-inspired scent. Captures the fruity-floral balance well.",
           differences: "Lighter sillage, shorter wear time. Less luxurious feel.",
-          bestFor: ["Budget-conscious", "Delina curious", "Lighter preference"]
+          bestFor: ["Budget-conscious", "Delina curious", "Lighter preference"],
+          retailers: [
+            { name: "Dossier", url: "https://dfrfrn.com/" }
+          ]
         },
         {
           name: "Sedbury",
@@ -144,7 +195,12 @@ window.DUPE_DATABASE = {
           matchScore: 70,
           reason: "Same house, similar DNA. A different interpretation of the fruity-floral theme at lower price.",
           differences: "Different fruit notes, more green aspects. Less iconic but equally refined.",
-          bestFor: ["PDM fans", "Collection building", "Wanting variety"]
+          bestFor: ["PDM fans", "Collection building", "Wanting variety"],
+          image: "https://www.sephora.com/productimages/sku/s2536889-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/parfums-de-marly-sedbury-P501976" },
+            { name: "Nordstrom", url: "https://www.nordstrom.com/s/parfums-de-marly-sedbury-eau-de-parfum/6020380" }
+          ]
         }
       ]
     },
@@ -156,6 +212,7 @@ window.DUPE_DATABASE = {
       subcategory: "eau de parfum",
       price: "$140–$200",
       description: "Iconic aldehydic floral. Ylang-ylang, rose, jasmine, and sandalwood. The original luxury fragrance.",
+      image: "https://www.sephora.com/productimages/sku/s2657362-main-zoom.jpg",
       aliases: ["chanel 5", "no 5", "number 5", "n5"],
       dupes: [
         {
@@ -165,7 +222,12 @@ window.DUPE_DATABASE = {
           matchScore: 65,
           reason: "Classic aldehydic floral from the same era. Shares the powdery, elegant DNA.",
           differences: "More spicy/oriental, less refined aldehydes. Very different dry-down.",
-          bestFor: ["Vintage lovers", "Aldehydic exploration", "Extreme budget"]
+          bestFor: ["Vintage lovers", "Aldehydic exploration", "Extreme budget"],
+          image: "https://m.media-amazon.com/images/I/61YH+J-Ik3L._SL1500_.jpg",
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/Elizabeth-Arden-Door-Parfum-Spray/dp/B000C1ZCBA" },
+            { name: "Ulta", url: "https://www.ulta.com/p/red-door-eau-de-toilette-spray-xlsImpprod3220107" }
+          ]
         },
         {
           name: "24 Faubourg",
@@ -174,7 +236,12 @@ window.DUPE_DATABASE = {
           matchScore: 68,
           reason: "Not cheaper, but a sophisticated aldehydic alternative with similar timeless elegance.",
           differences: "More peachy-floral, warmer. Different character, same sophistication level.",
-          bestFor: ["Aldehydic lovers", "Chanel fatigue", "Orange blossom fans"]
+          bestFor: ["Aldehydic lovers", "Chanel fatigue", "Orange blossom fans"],
+          image: "https://www.sephora.com/productimages/sku/s1236433-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/24-faubourg-P12664" },
+            { name: "Nordstrom", url: "https://www.nordstrom.com/s/hermes-24-faubourg-eau-de-parfum/2869410" }
+          ]
         }
       ]
     },
@@ -190,6 +257,7 @@ window.DUPE_DATABASE = {
       subcategory: "eau de parfum",
       price: "$445 (3.3 oz)",
       description: "Pineapple, birch, musk, oakmoss. The modern power fragrance benchmark.",
+      image: "https://www.sephora.com/productimages/sku/s2795113-main-zoom.jpg",
       aliases: ["creed aventus"],
       dupes: [
         {
@@ -199,7 +267,12 @@ window.DUPE_DATABASE = {
           matchScore: 85,
           reason: "The legendary Aventus dupe. Remarkable similarity at a fraction of the price. Cult following.",
           differences: "Stronger lemon opening, can be harsh first 30 min. Less refined but excellent longevity.",
-          bestFor: ["Best value", "Office wear", "Aventus curious"]
+          bestFor: ["Best value", "Office wear", "Aventus curious"],
+          image: "https://m.media-amazon.com/images/I/61xVPOPVH4L._SL1280_.jpg",
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/Armaf-Club-Nuit-Intense-Man/dp/B00K1E0TJO" },
+            { name: "FragranceNet", url: "https://www.fragrancenet.com/cologne/armaf/armaf-club-de-nuit-intense" }
+          ]
         },
         {
           name: "Explorer",
@@ -208,7 +281,12 @@ window.DUPE_DATABASE = {
           matchScore: 75,
           reason: "Designer take on the fruity-woody-smoky profile. Clean, versatile, widely available.",
           differences: "Less pineapple, more vetiver. Cleaner, less complex but very wearable.",
-          bestFor: ["Designer preference", "Clean aesthetic", "Everyday signature"]
+          bestFor: ["Designer preference", "Clean aesthetic", "Everyday signature"],
+          image: "https://www.sephora.com/productimages/sku/s2268376-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/explorer-eau-de-parfum-P433234" },
+            { name: "Ulta", url: "https://www.ulta.com/p/explorer-eau-de-parfum-pimprod2005970" }
+          ]
         },
         {
           name: "Cedrat Boisé",
@@ -217,7 +295,12 @@ window.DUPE_DATABASE = {
           matchScore: 72,
           reason: "Niche quality with similar citrus-woods structure. Beast mode projection and longevity.",
           differences: "More citrus-forward, less smoky-fruit. Powerhouse performer.",
-          bestFor: ["Projection seekers", "Niche explorers", "Statement scent"]
+          bestFor: ["Projection seekers", "Niche explorers", "Statement scent"],
+          image: "https://www.sephora.com/productimages/sku/s2578352-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/cedrat-boise-P502780" },
+            { name: "FragranceNet", url: "https://www.fragrancenet.com/perfume/mancera/mancera-cedrat-boise" }
+          ]
         },
         {
           name: "Supremacy Silver",
@@ -226,7 +309,11 @@ window.DUPE_DATABASE = {
           matchScore: 78,
           reason: "Another excellent budget Aventus-style fragrance. Smoky-fruity opening, woody dry-down.",
           differences: "More metallic/ozonic notes. Good longevity for the price.",
-          bestFor: ["Budget collection", "Layering", "Casual wear"]
+          bestFor: ["Budget collection", "Layering", "Casual wear"],
+          image: "https://m.media-amazon.com/images/I/61mcVT2rVKL._SL1500_.jpg",
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/Afnan-Supremacy-Silver-Parfum-Spray/dp/B079Y98TR7" }
+          ]
         }
       ]
     },
@@ -350,6 +437,7 @@ window.DUPE_DATABASE = {
       subcategory: "lipstick",
       price: "$34",
       description: "The universally flattering nude-pink. Cult-favorite MLBB shade.",
+      image: "https://www.sephora.com/productimages/sku/s1925795-main-zoom.jpg",
       aliases: ["pillow talk", "charlotte tilbury pillow talk", "ct pillow talk"],
       dupes: [
         {
@@ -359,7 +447,12 @@ window.DUPE_DATABASE = {
           matchScore: 80,
           reason: "Very close dusty rose shade with similar matte finish. Iconic MAC formula.",
           differences: "Slightly more mauve, less pink. True matte (more drying).",
-          bestFor: ["MAC loyalists", "Mauve lovers", "Proven formula"]
+          bestFor: ["MAC loyalists", "Mauve lovers", "Proven formula"],
+          image: "https://www.sephora.com/productimages/sku/s1261605-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/mac-matte-lipstick-P1137390" },
+            { name: "Ulta", url: "https://www.ulta.com/p/matte-lipstick-xlsImpprod5150231" }
+          ]
         },
         {
           name: "Super Lustrous Lipstick in Pink in the Afternoon",
@@ -368,7 +461,12 @@ window.DUPE_DATABASE = {
           matchScore: 75,
           reason: "Drugstore darling with surprisingly close color match. Excellent value.",
           differences: "Cream finish (not matte), less longevity. Needs more touch-ups.",
-          bestFor: ["Budget-conscious", "Cream finish preference", "Drug store accessible"]
+          bestFor: ["Budget-conscious", "Cream finish preference", "Drug store accessible"],
+          image: "https://m.media-amazon.com/images/I/61W+5A2GGNL._SL1500_.jpg",
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/Revlon-Super-Lustrous-Lipstick-Afternoon/dp/B003AVNQDY" },
+            { name: "Target", url: "https://www.target.com/p/revlon-super-lustrous-lipstick/-/A-11542217" }
+          ]
         },
         {
           name: "Lip Lingerie Push-Up in Seduction",
@@ -377,7 +475,12 @@ window.DUPE_DATABASE = {
           matchScore: 72,
           reason: "Affordable liquid lip option in similar nude-pink territory. Good longevity.",
           differences: "Liquid formula, different texture. Can be drying.",
-          bestFor: ["Liquid lip lovers", "Long wear needs", "Budget friendly"]
+          bestFor: ["Liquid lip lovers", "Long wear needs", "Budget friendly"],
+          image: "https://www.ulta.com/p/xlsImpprod12011167-main-zoom.jpg",
+          retailers: [
+            { name: "Ulta", url: "https://www.ulta.com/p/lip-lingerie-push-up-long-lasting-lipstick-xlsImpprod12011167" },
+            { name: "Target", url: "https://www.target.com/p/nyx-professional-makeup-lip-lingerie-push-up-lipstick/-/A-51242621" }
+          ]
         },
         {
           name: "Artist Lip Blush in Blush Vibes",
@@ -386,7 +489,11 @@ window.DUPE_DATABASE = {
           matchScore: 78,
           reason: "Similar universally flattering nude-pink with innovative blurring formula.",
           differences: "More blurred/soft focus finish. Lighter coverage.",
-          bestFor: ["Soft glam fans", "Natural finish lovers"]
+          bestFor: ["Soft glam fans", "Natural finish lovers"],
+          image: "https://www.sephora.com/productimages/sku/s2678608-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/makeup-by-mario-moistershine-lip-color-P506835" }
+          ]
         }
       ]
     },
@@ -432,6 +539,7 @@ window.DUPE_DATABASE = {
       subcategory: "blush",
       price: "$30",
       description: "Peachy-pink with golden shimmer. The original cult blush.",
+      image: "https://www.sephora.com/productimages/sku/s1116023-main-zoom.jpg",
       aliases: ["nars orgasm", "orgasm blush"],
       dupes: [
         {
@@ -441,7 +549,13 @@ window.DUPE_DATABASE = {
           matchScore: 85,
           reason: "Legendary dupe. Nearly identical peachy-pink with golden shimmer. Cult following of its own.",
           differences: "Baked formula (slightly more shimmery). Can be more intense on first swatch.",
-          bestFor: ["Best dupe overall", "Shimmer lovers", "Value seekers"]
+          bestFor: ["Best dupe overall", "Shimmer lovers", "Value seekers"],
+          image: "https://m.media-amazon.com/images/I/71Q6P1dAV5L._SL1500_.jpg",
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/Milani-Baked-Blush-Luminoso-Ounce/dp/B004CLFMXM" },
+            { name: "Target", url: "https://www.target.com/p/milani-baked-blush-luminoso-0-12oz/-/A-14445855" },
+            { name: "Ulta", url: "https://www.ulta.com/p/baked-blush-xlsImpprod5180055" }
+          ]
         },
         {
           name: "Powder Blush in Peach Parfait",
@@ -450,7 +564,11 @@ window.DUPE_DATABASE = {
           matchScore: 72,
           reason: "Ultra-affordable with similar coral-peach tone. Great for experimenting.",
           differences: "Less shimmer, more matte-satin. Less longevity.",
-          bestFor: ["Extreme budget", "Matte preference", "Beginners"]
+          bestFor: ["Extreme budget", "Matte preference", "Beginners"],
+          retailers: [
+            { name: "Target", url: "https://www.target.com/p/wet-n-wild-color-icon-blush/-/A-14493771" },
+            { name: "Walmart", url: "https://www.walmart.com/ip/wet-n-wild-Color-Icon-Blush/37876638" }
+          ]
         },
         {
           name: "Box O' Powder in Peachy",
@@ -459,7 +577,12 @@ window.DUPE_DATABASE = {
           matchScore: 70,
           reason: "Not cheaper, but an alternative peachy-pink blush with beautiful finish.",
           differences: "More pink, less coral. Different shimmer texture.",
-          bestFor: ["Pink preference", "Benefit fans"]
+          bestFor: ["Pink preference", "Benefit fans"],
+          image: "https://www.sephora.com/productimages/sku/s2586066-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/benefit-cosmetics-wanderful-world-silky-soft-powder-blush-P502426" },
+            { name: "Ulta", url: "https://www.ulta.com/p/box-o-powder-blush-xlsImpprod4140045" }
+          ]
         }
       ]
     },
@@ -471,16 +594,22 @@ window.DUPE_DATABASE = {
       subcategory: "complexion",
       price: "$49",
       description: "Glowy complexion booster. The viral 'Hollywood glow' product.",
+      image: "https://www.sephora.com/productimages/sku/s2186123-main-zoom.jpg",
       aliases: ["flawless filter", "hff", "ct filter"],
       dupes: [
         {
-          name: "Glass Skin Serum",
+          name: "Halo Glow Liquid Filter",
           brand: "E.l.f.",
-          priceRange: "$12",
-          matchScore: 78,
+          priceRange: "$14",
+          matchScore: 80,
           reason: "TikTok-viral dupe. Similar dewy, glassy finish at a fraction of the price.",
-          differences: "Thinner consistency, less coverage. More serum-like.",
-          bestFor: ["Budget-conscious", "Light coverage", "K-beauty fans"]
+          differences: "Thinner consistency, slightly less coverage. More serum-like.",
+          bestFor: ["Budget-conscious", "Light coverage", "K-beauty fans"],
+          image: "https://www.elfcosmetics.com/dw/image/v2/BBXC_PRD/on/demandware.static/-/Sites-elf-master/default/dw9c5c7c13/2022/83408_Open_A.jpg",
+          retailers: [
+            { name: "Target", url: "https://www.target.com/p/e-l-f-halo-glow-liquid-filter/-/A-86760579" },
+            { name: "Ulta", url: "https://www.ulta.com/p/halo-glow-liquid-filter-pimprod2027966" }
+          ]
         },
         {
           name: "Born to Glow Liquid Illuminator",
@@ -489,16 +618,25 @@ window.DUPE_DATABASE = {
           matchScore: 70,
           reason: "Affordable liquid highlighter with similar glowy effect. Mixable with foundation.",
           differences: "More highlighter-like, less skin-like. More obvious shimmer.",
-          bestFor: ["Extreme budget", "Highlight focus", "Mixing"]
+          bestFor: ["Extreme budget", "Highlight focus", "Mixing"],
+          image: "https://www.nyxcosmetics.com/dw/image/v2/AANG_PRD/on/demandware.static/-/Sites-cpd-nyx-master-catalog/default/dw8f4f3e0d/ProductImages/2016/Face/Born_To_Glow_Liquid_Illuminator/borntoglow_main.jpg",
+          retailers: [
+            { name: "Ulta", url: "https://www.ulta.com/p/born-to-glow-liquid-illuminator-xlsImpprod5180041" },
+            { name: "Target", url: "https://www.target.com/p/nyx-professional-makeup-born-to-glow-liquid-illuminator/-/A-16602814" }
+          ]
         },
         {
-          name: "Glow Reviver Lip & Cheek",
+          name: "Positive Light Liquid Luminizer",
           brand: "Rare Beauty",
           priceRange: "$25",
-          matchScore: 68,
-          reason: "Different product category but achieves similar lit-from-within effect.",
-          differences: "Cream vs liquid, cheeks only. Different application.",
-          bestFor: ["Cream preference", "Rare Beauty fans"]
+          matchScore: 72,
+          reason: "Similar lit-from-within effect with beautiful natural finish.",
+          differences: "More concentrated, different application. Better for targeted glow.",
+          bestFor: ["Rare Beauty fans", "Natural glow lovers"],
+          image: "https://www.sephora.com/productimages/sku/s2559402-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/rare-beauty-by-selena-gomez-positive-light-liquid-luminizer-highlight-P501598" }
+          ]
         }
       ]
     },
@@ -514,6 +652,7 @@ window.DUPE_DATABASE = {
       subcategory: "moisturizer",
       price: "$68",
       description: "Peptide-packed moisturizer. Firming, anti-aging, protein-rich formula.",
+      image: "https://www.sephora.com/productimages/sku/s2015625-main-zoom.jpg",
       aliases: ["drunk elephant protini", "de protini"],
       dupes: [
         {
@@ -523,7 +662,11 @@ window.DUPE_DATABASE = {
           matchScore: 75,
           reason: "Similar peptide-focused formula at remarkable value. Clean, effective, no-frills.",
           differences: "Lighter texture, fewer peptide varieties. Less luxurious feel.",
-          bestFor: ["Budget-conscious", "Simple routines", "Peptide curious"]
+          bestFor: ["Budget-conscious", "Simple routines", "Peptide curious"],
+          image: "https://www.sephora.com/productimages/sku/s2460057-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/the-inkey-list-peptide-moisturizer-P460737" }
+          ]
         },
         {
           name: "Buffet + Copper Peptides 1%",
@@ -532,7 +675,12 @@ window.DUPE_DATABASE = {
           matchScore: 70,
           reason: "Serum (not cream) but excellent peptide delivery. Can layer under moisturizer.",
           differences: "Different texture, serum format. Needs additional moisturizer.",
-          bestFor: ["Serum lovers", "The Ordinary fans", "Customizers"]
+          bestFor: ["Serum lovers", "The Ordinary fans", "Customizers"],
+          image: "https://www.sephora.com/productimages/sku/s2031481-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/the-ordinary-buffet-P427420" },
+            { name: "Ulta", url: "https://www.ulta.com/p/buffet-pimprod2007104" }
+          ]
         },
         {
           name: "Multi-Peptide + HA Serum",
@@ -541,7 +689,11 @@ window.DUPE_DATABASE = {
           matchScore: 72,
           reason: "Well-formulated peptide serum with hyaluronic acid. Clean brand ethos.",
           differences: "Serum texture, needs to be paired with moisturizer.",
-          bestFor: ["Naturium fans", "HA lovers", "Layering"]
+          bestFor: ["Naturium fans", "HA lovers", "Layering"],
+          image: "https://www.target.com/p/naturium-multi-peptide-moisturizer-1-7-fl-oz/-/A-82686899",
+          retailers: [
+            { name: "Target", url: "https://www.target.com/p/naturium-multi-peptide-moisturizer-1-7-fl-oz/-/A-82686899" }
+          ]
         }
       ]
     },
@@ -631,6 +783,7 @@ window.DUPE_DATABASE = {
       subcategory: "serum",
       price: "$182",
       description: "The gold standard vitamin C serum. 15% L-ascorbic acid, vitamin E, ferulic acid.",
+      image: "https://www.dermstore.com/images/skinceuticals-ce-ferulic-serum-30ml/13231143-1144646626935641.jpg",
       aliases: ["ce ferulic", "skinceuticals vitamin c", "skinceuticals ce"],
       dupes: [
         {
@@ -640,7 +793,11 @@ window.DUPE_DATABASE = {
           matchScore: 80,
           reason: "Similar L-ascorbic acid + vitamin E + ferulic acid formula. Fresh packaging prevents oxidation.",
           differences: "Different concentration, added fruit enzymes. Requires mixing before use.",
-          bestFor: ["DE fans", "Fresh formula preference", "Luxury but less expensive"]
+          bestFor: ["DE fans", "Fresh formula preference", "Luxury but less expensive"],
+          image: "https://www.sephora.com/productimages/sku/s2442477-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/c-firma-fresh-day-serum-P479917" }
+          ]
         },
         {
           name: "Vitamin C Suspension 23% + HA Spheres 2%",
@@ -649,7 +806,12 @@ window.DUPE_DATABASE = {
           matchScore: 60,
           reason: "Incredibly affordable vitamin C option. Different form but effective antioxidant.",
           differences: "Silicone suspension, gritty texture. Different form of vitamin C.",
-          bestFor: ["Extreme budget", "The Ordinary fans", "Experimentation"]
+          bestFor: ["Extreme budget", "The Ordinary fans", "Experimentation"],
+          image: "https://www.sephora.com/productimages/sku/s2031572-main-zoom.jpg",
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/the-ordinary-vitamin-c-suspension-23-ha-spheres-2-P427420" },
+            { name: "Ulta", url: "https://www.ulta.com/p/vitamin-c-suspension-23-ha-spheres-2-pimprod2007100" }
+          ]
         },
         {
           name: "15% Vitamin C + E + Ferulic Acid Serum",
@@ -658,16 +820,25 @@ window.DUPE_DATABASE = {
           matchScore: 82,
           reason: "Almost identical formula to SkinCeuticals at fraction of price. Highly regarded dupe.",
           differences: "Less elegant packaging, may oxidize faster. Same key ingredients.",
-          bestFor: ["Best value dupe", "Formula-focused", "Budget conscious"]
+          bestFor: ["Best value dupe", "Formula-focused", "Budget conscious"],
+          image: "https://m.media-amazon.com/images/I/51X6AZOXiAL._SL1200_.jpg",
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/Timeless-Skin-Care-Vitamin-Serum/dp/B0036BI56G" }
+          ]
         },
         {
-          name: "Vitamin C Serum with Hyaluronic Acid",
+          name: "Vitamin C Serum 10%",
           brand: "La Roche-Posay",
           priceRange: "$45",
           matchScore: 70,
           reason: "Pharmacy brand with dermatologist credibility. Well-formulated vitamin C option.",
           differences: "10% vitamin C (lower concentration). Different supporting ingredients.",
-          bestFor: ["Sensitive skin", "Pharmacy accessibility", "LRP fans"]
+          bestFor: ["Sensitive skin", "Pharmacy accessibility", "LRP fans"],
+          image: "https://www.laroche-posay.us/-/media/project/loreal/brand-sites/lrp/americas/us/products/vitamin-c-serum/pure-vitamin-c-face-serum/3337875660570-lrp-serum-vit-c-30ml.png",
+          retailers: [
+            { name: "Ulta", url: "https://www.ulta.com/p/pure-vitamin-c10-serum-pimprod2018118" },
+            { name: "Amazon", url: "https://www.amazon.com/Roche-Posay-Vitamin-Anti-Aging-Sensitive-Salicylic/dp/B07XQHWCP5" }
+          ]
         }
       ]
     }

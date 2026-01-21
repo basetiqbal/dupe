@@ -289,7 +289,6 @@ body {
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-base);
-  overflow: hidden;
 }
 
 .search-input-wrapper:hover {
@@ -300,6 +299,11 @@ body {
 .search-input-wrapper:focus-within {
   border-color: var(--color-accent-warm);
   box-shadow: var(--shadow-md), 0 0 0 3px rgba(139, 115, 85, 0.12);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.search-input-wrapper:focus-within .autocomplete-list:not(.hidden) ~ * {
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 [data-theme="dark"] .search-input-wrapper:focus-within {
@@ -385,6 +389,86 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
+/* === Autocomplete === */
+.autocomplete-list {
+  position: absolute;
+  top: 100%;
+  left: -1.5px;
+  right: -1.5px;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-accent-warm);
+  border-top: none;
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  list-style: none;
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.autocomplete-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-xl);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.active {
+  background: var(--color-bg-alt);
+}
+
+.autocomplete-item-image {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  background: var(--color-bg-alt);
+  flex-shrink: 0;
+}
+
+.autocomplete-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.autocomplete-item-name {
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.autocomplete-item-brand {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+}
+
+.autocomplete-item-category {
+  font-size: 0.6875rem;
+  color: var(--color-accent-warm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.search-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  text-align: center;
+  margin-top: var(--space-sm);
+}
+
 /* === Results Section === */
 .results-section {
   padding: var(--space-xl) var(--space-md) var(--space-3xl);
@@ -422,7 +506,6 @@ body {
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
   margin-bottom: var(--space-2xl);
-  text-align: center;
   position: relative;
   overflow: hidden;
 }
@@ -433,7 +516,7 @@ body {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
+  width: 80px;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--color-accent-warm), transparent);
 }
@@ -445,13 +528,52 @@ body {
   color: var(--color-text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
   margin-top: var(--space-sm);
+  text-align: center;
+}
+
+.original-product-content {
+  display: flex;
+  gap: var(--space-xl);
+  align-items: flex-start;
+}
+
+.original-product-image {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-bg-alt);
+}
+
+.original-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-base);
+}
+
+.original-product-image:hover img {
+  transform: scale(1.05);
+}
+
+.original-product-image.no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+}
+
+.original-product-details {
+  flex: 1;
+  text-align: left;
 }
 
 .original-name {
   font-family: var(--font-serif);
-  font-size: 1.625rem;
+  font-size: 1.5rem;
   font-weight: 500;
   color: var(--color-text);
   margin-bottom: var(--space-xs);
@@ -459,9 +581,16 @@ body {
 }
 
 .original-brand {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   color: var(--color-text-secondary);
   margin-bottom: var(--space-sm);
+}
+
+.original-description {
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+  line-height: 1.5;
+  margin-bottom: var(--space-md);
 }
 
 .original-price {
@@ -515,10 +644,44 @@ body {
 
 .dupe-card-header {
   display: flex;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.dupe-card-image {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-bg-alt);
+}
+
+.dupe-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-base);
+}
+
+.dupe-card:hover .dupe-card-image img {
+  transform: scale(1.05);
+}
+
+.dupe-card-image.no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+  font-size: 0.75rem;
+}
+
+.dupe-card-main {
+  flex: 1;
+  display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: var(--space-md);
-  margin-bottom: var(--space-md);
 }
 
 .dupe-card-info {
@@ -527,7 +690,7 @@ body {
 
 .dupe-name {
   font-family: var(--font-serif);
-  font-size: 1.1875rem;
+  font-size: 1.125rem;
   font-weight: 500;
   color: var(--color-text);
   margin-bottom: var(--space-xs);
@@ -596,6 +759,59 @@ body {
   line-height: 1.5;
 }
 
+/* Retailer Links */
+.dupe-retailers {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.dupe-retailers-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-sm);
+}
+
+.dupe-retailers-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.dupe-retailer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.dupe-retailer-link:hover {
+  color: var(--color-accent-warm);
+  border-color: var(--color-accent-warm);
+  background: var(--color-cream);
+}
+
+[data-theme="dark"] .dupe-retailer-link:hover {
+  background: var(--color-bg-alt);
+}
+
+.dupe-retailer-link svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.6;
+}
+
 /* Match Score Badge */
 .match-score {
   display: inline-flex;
@@ -629,9 +845,16 @@ body {
   padding: var(--space-3xl) var(--space-xl);
 }
 
+.no-results-icon {
+  margin-bottom: var(--space-lg);
+  color: var(--color-text-tertiary);
+  opacity: 0.5;
+}
+
 .no-results-title {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
+  font-size: 1.375rem;
+  font-style: italic;
   font-weight: 500;
   color: var(--color-text);
   margin-bottom: var(--space-md);
@@ -794,17 +1017,58 @@ body {
     padding: var(--space-xs) var(--space-sm);
   }
   
+  /* Autocomplete mobile */
+  .autocomplete-item {
+    padding: var(--space-sm) var(--space-md);
+  }
+  
+  .autocomplete-item-image {
+    width: 36px;
+    height: 36px;
+  }
+  
+  /* Original product mobile */
+  .original-product-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .original-product-details {
+    text-align: center;
+  }
+  
+  .original-product-image {
+    width: 100px;
+    height: 100px;
+  }
+  
+  /* Dupe cards mobile */
   .dupe-card-header {
+    flex-direction: column;
+  }
+  
+  .dupe-card-image {
+    width: 100%;
+    height: 140px;
+    margin-bottom: var(--space-sm);
+  }
+  
+  .dupe-card-main {
     flex-direction: column;
     gap: var(--space-sm);
   }
   
   .dupe-price {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
   }
   
   .original-product {
     padding: var(--space-lg);
+  }
+  
+  .dupe-retailers-list {
+    justify-content: center;
   }
 }
 

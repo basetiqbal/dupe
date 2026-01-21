@@ -52,9 +52,12 @@
                 type="text" 
                 class="search-input" 
                 id="search-input"
-                placeholder="e.g., Chanel No. 5, Charlotte Tilbury Pillow Talk..."
+                placeholder="e.g., Baccarat Rouge 540, Pillow Talk, Protini..."
                 autocomplete="off"
                 aria-label="Search for a luxury product"
+                aria-describedby="search-hint"
+                aria-controls="autocomplete-list"
+                aria-autocomplete="list"
               >
               <button type="submit" class="search-button" aria-label="Search">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -62,7 +65,12 @@
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
               </button>
+              <!-- Autocomplete Dropdown -->
+              <ul class="autocomplete-list hidden" id="autocomplete-list" role="listbox">
+                <!-- Suggestions will be inserted here -->
+              </ul>
             </div>
+            <p class="search-hint hidden" id="search-hint">Press Enter to search or select a suggestion</p>
           </form>
 
           <!-- Quick Search Suggestions -->
@@ -91,9 +99,17 @@
           <!-- Original Product Card -->
           <div class="original-product" id="original-product">
             <span class="label">You searched for</span>
-            <h2 class="original-name" id="original-name"></h2>
-            <p class="original-brand" id="original-brand"></p>
-            <p class="original-price" id="original-price"></p>
+            <div class="original-product-content">
+              <div class="original-product-image" id="original-product-image">
+                <!-- Image will be inserted here -->
+              </div>
+              <div class="original-product-details">
+                <h2 class="original-name" id="original-name"></h2>
+                <p class="original-brand" id="original-brand"></p>
+                <p class="original-description" id="original-description"></p>
+                <p class="original-price" id="original-price"></p>
+              </div>
+            </div>
           </div>
 
           <!-- Dupes Header -->
@@ -109,13 +125,21 @@
 
           <!-- No Results State -->
           <div class="no-results hidden" id="no-results">
-            <h3 class="no-results-title">No exact dupes found</h3>
+            <div class="no-results-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="8" y1="8" x2="14" y2="14"></line>
+                <line x1="14" y1="8" x2="8" y2="14"></line>
+              </svg>
+            </div>
+            <h3 class="no-results-title">Not in our edit yet</h3>
             <p class="no-results-text">
-              We couldn't find a close match for this product in our current database. 
-              This could mean it's truly unique, or we simply haven't catalogued it yet.
+              We haven't curated dupes for this product yet—but that doesn't mean they don't exist. 
+              Some products are genuinely one-of-a-kind, while others simply haven't made it to our list.
             </p>
             <p class="no-results-suggestion">
-              Try searching for the brand name or product type instead.
+              Try a different spelling, the brand name, or browse our popular searches below.
             </p>
           </div>
 
@@ -132,7 +156,7 @@
       <!-- Loading State -->
       <div class="loading hidden" id="loading">
         <div class="loading-spinner"></div>
-        <p class="loading-text">Finding your dupes...</p>
+        <p class="loading-text">Curating your edit...</p>
       </div>
     </main>
 
