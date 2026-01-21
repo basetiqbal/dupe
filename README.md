@@ -1,22 +1,34 @@
-# The Dupe Edit
+# ✦ The Dupe Edit
 
-> Luxury alternatives, curated with care.
+> *Luxury alternatives, curated with care.*
 
-A minimalist web app that helps users find affordable dupes for luxury beauty and fragrance products. Built for GitHub Pages with a focus on editorial aesthetics, speed, and accessibility.
+**[✨ Visit The Dupe Edit →](https://basetiqbal.github.io/dupe/)**
 
-![The Dupe Edit](https://img.shields.io/badge/version-1.0.0-black) ![License](https://img.shields.io/badge/license-MIT-green) ![Deploy](https://img.shields.io/badge/deploy-GitHub%20Pages-blue)
+---
+
+A modern, editorial web experience for discovering affordable alternatives to luxury beauty and fragrance. Designed with the philosophy that great taste shouldn't require a trust fund.
+
+![Version](https://img.shields.io/badge/version-1.0.0-292524?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-44403c?style=flat-square) ![Deploy](https://img.shields.io/badge/live-GitHub%20Pages-78716c?style=flat-square)
+
+---
+
+## ✦ The Vision
+
+*What if finding dupes felt like flipping through a fashion editorial?*
+
+The Dupe Edit reimagines bargain-hunting as a curated, editorial experience. No cluttered comparison tables. No budget-shaming. Just beautiful design, honest recommendations, and the quiet confidence that comes from knowing your money went further.
 
 ---
 
 ## ✨ Features
 
-- **Single-page interface** — One search bar, instant results
-- **Editorial design** — Feels like a beauty magazine, not a bargain site  
-- **Dark mode** — Automatic system detection + manual toggle
-- **Curated database** — Hand-selected dupes with honest assessments
-- **Mobile-first** — Optimized for on-the-go searching
-- **No backend required** — Pure static files for GitHub Pages
-- **Automated deployment** — Push to main, automatically deploys
+- **Single-page poetry** — One search bar, instant gratification
+- **Editorial soul** — Designed like a beauty magazine, not a coupon site  
+- **Dark mode elegance** — System-aware with a luxurious manual toggle
+- **Curated with intention** — Hand-selected dupes, honest assessments
+- **Mobile-native** — Researched in Sephora, perfected for your pocket
+- **Zero backend** — Pure static magic for GitHub Pages
+- **Ship & forget** — Push to main, watch it fly
 
 ---
 
@@ -240,19 +252,24 @@ MIT License — Use freely, attribution appreciated.
 
 ---
 
-## 💌 Philosophy
+## ✦ Philosophy
 
-> "Luxury should inspire, not gatekeep."
+> *"Luxury should inspire, not gatekeep."*
 
-The Dupe Edit exists because everyone deserves to feel good. We believe:
+The Dupe Edit exists because everyone deserves to feel beautiful. We believe:
 
-- **Price ≠ worth** — Expensive doesn't always mean better
-- **Accessibility matters** — Beauty shouldn't require wealth
-- **Honesty builds trust** — We'd rather say "no good dupe exists" than mislead
-- **Simplicity is luxury** — Clean design, clear information, no clutter
+- **Price ≠ worth** — The most expensive option is rarely the only good one
+- **Accessibility is chic** — Great taste doesn't require a trust fund
+- **Honesty is everything** — We'd rather say "no dupe exists" than mislead
+- **Less is more** — Clean design, clear answers, zero chaos
 
 ---
 
 <p align="center">
-  <em>Made with care for beauty lovers everywhere.</em>
+  <sub>✦</sub>
+  <br>
+  <em>Crafted for beauty lovers who know the difference between expensive and good.</em>
+  <br>
+  <br>
+  <a href="https://basetiqbal.github.io/dupe/">Visit The Dupe Edit →</a>
 </p>
