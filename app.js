@@ -24,7 +24,14 @@
     maxAutocompleteResults: 6,
     feedbackEmail: 'hello@thedupeedit.com',
     imagePlaceholder: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAiIGhlaWdodD0iODAiIGZpbGw9IiNGNUYwRTgiLz48cGF0aCBkPSJNMzIgNDhMMzYgNDRMNDAgNDhMNDggMzZMNTYgNDgiIHN0cm9rZT0iI0M0QTY3QSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48Y2lyY2xlIGN4PSIzNiIgY3k9IjMyIiByPSI0IiBmaWxsPSIjQzRBNjdBIi8+PC9zdmc+',
+    // API endpoint - uses relative path for Vercel, absolute for development
+    apiEndpoint: '/api/search',
+    apiTimeout: 8000, // 8 second timeout for API calls
+    useRealTimeApi: true, // Toggle to enable/disable real API calls
   };
+  
+  // Store for real-time API data
+  let liveSearchData = null;
 
   // ============================================
   // DOM Elements
@@ -58,6 +65,91 @@
   // State
   let activeAutocompleteIndex = -1;
   let autocompleteDebounceTimer = null;
+
+  // ============================================
+  // Real-Time API Integration
+  // ============================================
+  
+  /**
+   * Fetch live data from the search API
+   * Returns real-time results from YouTube, Reddit, etc.
+   */
+  async function fetchLiveSearchData(query) {
+    if (!CONFIG.useRealTimeApi) {
+      return null;
+    }
+    
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), CONFIG.apiTimeout);
+      
+      const response = await fetch(`${CONFIG.apiEndpoint}?q=${encodeURIComponent(query)}`, {
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        console.warn('[API] Response not OK:', response.status);
+        return null;
+      }
+      
+      const data = await response.json();
+      console.log('[API] Live data received:', data);
+      return data;
+      
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.warn('[API] Request timed out');
+      } else {
+        console.warn('[API] Fetch error:', error.message);
+      }
+      return null;
+    }
+  }
+  
+  /**
+   * Merge live API data with static product data
+   */
+  function mergeWithLiveData(product, liveData) {
+    if (!liveData || !product) return product;
+    
+    const merged = { ...product };
+    
+    // Add live YouTube videos
+    if (liveData.sources?.youtube?.results?.length > 0) {
+      merged.liveVideos = liveData.sources.youtube.results.map(v => ({
+        platform: 'youtube',
+        videoId: v.videoId,
+        title: v.title,
+        author: v.author,
+        views: v.views,
+        thumbnail: v.thumbnail,
+        url: v.url,
+        isLive: true,
+      }));
+    }
+    
+    // Add live Reddit discussions
+    if (liveData.sources?.reddit?.results?.length > 0) {
+      merged.liveReddit = liveData.sources.reddit.results;
+    }
+    
+    // Add TikTok search info
+    if (liveData.sources?.tiktok?.info) {
+      merged.liveTikTok = liveData.sources.tiktok.info;
+    }
+    
+    // Add suggestions for related searches
+    if (liveData.sources?.suggestions?.results?.length > 0) {
+      merged.liveSuggestions = liveData.sources.suggestions.results;
+    }
+    
+    return merged;
+  }
 
   // ============================================
   // Theme Management
@@ -265,7 +357,7 @@
   // ============================================
 
   /**
-   * Source search configuration for real-time feel
+   * Source search configuration for real-time search
    */
   const SOURCES = [
     { id: 'database', name: 'Our curated database', delay: 200 },
@@ -289,43 +381,113 @@
   }
 
   /**
-   * Animate source search progress
+   * Animate source search progress with real API integration
+   * Now actually waits for live data from the API
    */
-  async function animateSourceSearch(product) {
+  async function animateSourceSearch(query, product) {
     const loadingText = document.getElementById('loading-text');
-    const sourceItems = document.querySelectorAll('.source-item');
     
-    // Track which sources found data
-    const foundSources = {
-      database: !!product,
-      youtube: product?.videos?.length > 0,
-      tiktok: product?.social?.tiktok,
-      reddit: product?.social?.reddit?.length > 0,
-      prices: product?.dupes?.length > 0,
-    };
+    // Start database search animation immediately (this is instant/static)
+    const dbItem = document.querySelector('.source-item[data-source="database"]');
+    if (dbItem) {
+      dbItem.classList.add('searching');
+      loadingText.textContent = 'Checking our curated database...';
+      await new Promise(resolve => setTimeout(resolve, 200));
+      dbItem.classList.remove('searching');
+      dbItem.classList.add(product ? 'found' : 'complete');
+    }
     
-    // Animate each source sequentially
-    for (let i = 0; i < SOURCES.length; i++) {
-      const source = SOURCES[i];
-      const item = document.querySelector(`.source-item[data-source="${source.id}"]`);
+    // Now fetch live data from API in parallel with animation
+    let liveData = null;
+    
+    if (CONFIG.useRealTimeApi) {
+      // Start API fetch
+      const apiPromise = fetchLiveSearchData(query);
       
-      if (item) {
-        // Start searching this source
-        item.classList.add('searching');
-        loadingText.textContent = `Checking ${source.name.toLowerCase()}...`;
-        
-        // Wait for "search" to complete
-        await new Promise(resolve => setTimeout(resolve, source.delay));
-        
-        // Mark as complete or found
-        item.classList.remove('searching');
-        if (foundSources[source.id]) {
-          item.classList.add('found');
-        } else {
-          item.classList.add('complete');
+      // Animate YouTube search
+      const ytItem = document.querySelector('.source-item[data-source="youtube"]');
+      if (ytItem) {
+        ytItem.classList.add('searching');
+        loadingText.textContent = 'Searching YouTube reviews...';
+      }
+      
+      // Animate TikTok search
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const ttItem = document.querySelector('.source-item[data-source="tiktok"]');
+      if (ttItem) {
+        ttItem.classList.add('searching');
+        loadingText.textContent = 'Scanning TikTok trends...';
+      }
+      
+      // Animate Reddit search
+      await new Promise(resolve => setTimeout(resolve, 200));
+      const redditItem = document.querySelector('.source-item[data-source="reddit"]');
+      if (redditItem) {
+        redditItem.classList.add('searching');
+        loadingText.textContent = 'Checking Reddit community...';
+      }
+      
+      // Wait for API response
+      loadingText.textContent = 'Gathering results...';
+      liveData = await apiPromise;
+      
+      // Update YouTube status
+      if (ytItem) {
+        ytItem.classList.remove('searching');
+        ytItem.classList.add(liveData?.sources?.youtube?.found ? 'found' : 'complete');
+      }
+      
+      // Update TikTok status  
+      if (ttItem) {
+        ttItem.classList.remove('searching');
+        ttItem.classList.add(liveData?.sources?.tiktok?.found ? 'found' : 'complete');
+      }
+      
+      // Update Reddit status
+      if (redditItem) {
+        redditItem.classList.remove('searching');
+        redditItem.classList.add(liveData?.sources?.reddit?.found ? 'found' : 'complete');
+      }
+    } else {
+      // Fallback: animate sources based on static data (original behavior)
+      const foundSources = {
+        youtube: product?.videos?.length > 0,
+        tiktok: product?.social?.tiktok,
+        reddit: product?.social?.reddit?.length > 0,
+      };
+      
+      for (const sourceId of ['youtube', 'tiktok', 'reddit']) {
+        const item = document.querySelector(`.source-item[data-source="${sourceId}"]`);
+        if (item) {
+          item.classList.add('searching');
+          loadingText.textContent = `Checking ${sourceId}...`;
+          await new Promise(resolve => setTimeout(resolve, 300));
+          item.classList.remove('searching');
+          item.classList.add(foundSources[sourceId] ? 'found' : 'complete');
         }
       }
     }
+    
+    // Price comparison (based on whether we have dupes)
+    const priceItem = document.querySelector('.source-item[data-source="prices"]');
+    if (priceItem) {
+      priceItem.classList.add('searching');
+      loadingText.textContent = 'Comparing prices...';
+      await new Promise(resolve => setTimeout(resolve, 200));
+      priceItem.classList.remove('searching');
+      priceItem.classList.add(product?.dupes?.length > 0 ? 'found' : 'complete');
+    }
+    
+    // Final message
+    loadingText.textContent = product 
+      ? 'Compiling your edit...' 
+      : 'Wrapping up...';
+    
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // Return the live data so we can merge it
+    return liveData;
+  }
     
     // Final message
     loadingText.textContent = product 
@@ -848,12 +1010,37 @@
     if (originalContentEl) {
       let contentHTML = '';
       
-      if (product.videos && product.videos.length > 0) {
-        contentHTML += renderVideoSection(product.videos, product.name);
+      // Combine static videos with live videos
+      const allVideos = [
+        ...(product.videos || []),
+        ...(product.liveVideos || [])
+      ].filter((v, i, arr) => 
+        // Dedupe by videoId
+        arr.findIndex(x => x.videoId === v.videoId) === i
+      );
+      
+      if (allVideos.length > 0) {
+        contentHTML += renderVideoSection(allVideos, product.name);
       }
       
+      // Render static social links
       if (product.social) {
         contentHTML += renderSocialLinks(product.social, product.name);
+      }
+      
+      // Render live Reddit discussions
+      if (product.liveReddit && product.liveReddit.length > 0) {
+        contentHTML += renderLiveReddit(product.liveReddit);
+      }
+      
+      // Render live TikTok info
+      if (product.liveTikTok) {
+        contentHTML += renderLiveTikTok(product.liveTikTok);
+      }
+      
+      // Render related search suggestions
+      if (product.liveSuggestions && product.liveSuggestions.length > 0) {
+        contentHTML += renderLiveSuggestions(product.liveSuggestions);
       }
       
       if (contentHTML) {
@@ -861,6 +1048,84 @@
         originalContentEl.classList.add('animate-in');
       }
     }
+  }
+  
+  /**
+   * Render live Reddit discussions from API
+   */
+  function renderLiveReddit(threads) {
+    if (!threads || threads.length === 0) return '';
+    
+    const threadItems = threads.slice(0, 3).map(thread => `
+      <a href="${escapeHTML(thread.url)}" 
+         class="live-reddit-item" 
+         target="_blank" 
+         rel="noopener noreferrer">
+        <span class="reddit-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701z"/></svg>
+        </span>
+        <span class="reddit-content">
+          <span class="reddit-title">${escapeHTML(thread.title.length > 60 ? thread.title.slice(0, 60) + '...' : thread.title)}</span>
+          <span class="reddit-meta">r/${escapeHTML(thread.subreddit)} · ${thread.score} upvotes · ${thread.comments} comments</span>
+        </span>
+      </a>
+    `).join('');
+    
+    return `
+      <div class="live-section live-reddit-section animate-in">
+        <p class="live-section-label">
+          <span class="live-badge">Live</span>
+          Reddit Discussions
+        </p>
+        <div class="live-reddit-list">${threadItems}</div>
+      </div>
+    `;
+  }
+  
+  /**
+   * Render live TikTok search info from API
+   */
+  function renderLiveTikTok(tiktokInfo) {
+    if (!tiktokInfo) return '';
+    
+    const hashtags = (tiktokInfo.hashtags || []).slice(0, 4).map(tag => 
+      `<span class="tiktok-hashtag">${escapeHTML(tag)}</span>`
+    ).join('');
+    
+    return `
+      <div class="live-section live-tiktok-section animate-in">
+        <p class="live-section-label">
+          <span class="live-badge">Live</span>
+          TikTok
+        </p>
+        <a href="${escapeHTML(tiktokInfo.searchUrl)}" 
+           class="live-tiktok-link" 
+           target="_blank" 
+           rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+          Search TikTok for dupes
+        </a>
+        ${hashtags ? `<div class="tiktok-hashtags">${hashtags}</div>` : ''}
+      </div>
+    `;
+  }
+  
+  /**
+   * Render related search suggestions from API
+   */
+  function renderLiveSuggestions(suggestions) {
+    if (!suggestions || suggestions.length === 0) return '';
+    
+    const chips = suggestions.slice(0, 5).map(suggestion => 
+      `<button class="suggestion-chip live-suggestion" data-query="${escapeHTML(suggestion)}">${escapeHTML(suggestion)}</button>`
+    ).join('');
+    
+    return `
+      <div class="live-section live-suggestions-section animate-in">
+        <p class="live-section-label">Related Searches</p>
+        <div class="live-suggestions-list">${chips}</div>
+      </div>
+    `;
   }
 
   /**
@@ -1018,6 +1283,7 @@
 
   /**
    * Handle search form submission
+   * Now integrates with real-time API for live data
    */
   async function handleSearch(event) {
     event.preventDefault();
@@ -1033,11 +1299,17 @@
     // Show loading with source animation
     showLoading();
     
-    // Perform search (instant, but we'll animate the display)
-    const result = searchDupes(query);
+    // Perform local search (instant)
+    const staticResult = searchDupes(query);
     
-    // Animate the source search experience
-    await animateSourceSearch(result);
+    // Animate the source search and fetch live data from API
+    const liveData = await animateSourceSearch(query, staticResult);
+    
+    // Merge static data with live API data
+    const result = mergeWithLiveData(staticResult, liveData);
+    
+    // Store live data for rendering
+    liveSearchData = liveData;
     
     // Hide loading and show results with staggered animation
     hideLoading();
@@ -1139,6 +1411,13 @@
     
     elements.suggestionChips.forEach(chip => {
       chip.addEventListener('click', handleSuggestionClick);
+    });
+    
+    // Handle clicks on live suggestions (dynamically added)
+    document.addEventListener('click', (event) => {
+      if (event.target.classList.contains('live-suggestion')) {
+        handleSuggestionClick(event);
+      }
     });
     
     // Request dupe button handler
