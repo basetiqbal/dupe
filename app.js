@@ -109,11 +109,13 @@
         }
       }
       const score = Math.max.apply(null, scores);
+      if (score > 0) console.log('[DEBUG] Score for', product.brand, product.name, ':', score);
       if (score > bestScore && score >= 0.4) {
         bestScore = score;
         best = product;
       }
     }
+    console.log('[DEBUG] Best match:', best ? (best.brand + ' ' + best.name) : 'null', '| Score:', bestScore);
     return best;
   }
 
@@ -409,6 +411,7 @@
     
     // Search local database and fetch live data in parallel
     var localResult = searchDatabase(query);
+    console.log('[DEBUG] Query:', query, '| Local result:', localResult ? (localResult.brand + ' ' + localResult.name) : 'null');
     var liveData = await fetchLiveData(query);
     
     hideLoading();
