@@ -20,6 +20,7 @@
   const els = {
     searchForm: $('#search-form'),
     searchInput: $('#search-input'),
+    autocompleteList: $('#autocomplete-list'),
     searchSection: $('#search-section'),
     resultsSection: $('#results-section'),
     loading: $('#loading'),
@@ -37,6 +38,8 @@
     noResults: $('#no-results'),
     chips: $$('.suggestion-chip'),
   };
+  
+  let autocompleteIndex = -1;
 
   // ============================================
   // Theme
@@ -61,22 +64,97 @@
     if (!window.DUPE_DATABASE || query.length < CONFIG.minSearchLength) return null;
     
     const q = query.toLowerCase().trim();
+    const qWords = q.split(/\s+/);
+    
+    let bestMatch = null;
+    let bestScore = 0;
     
     for (const product of window.DUPE_DATABASE.products) {
       const targets = [
-        product.name.toLowerCase(),
-        product.brand.toLowerCase(),
-        (product.brand + ' ' + product.name).toLowerCase(),
-        ...(product.aliases || []).map(a => a.toLowerCase())
+        { text: product.name.toLowerCase(), weight: 1.0 },
+        { text: product.brand.toLowerCase(), weight: 0.8 },
+        { text: (product.brand + ' ' + product.name).toLowerCase(), weight: 1.2 },
+        ...(product.aliases || []).map(a => ({ text: a.toLowerCase(), weight: 1.5 }))
       ];
       
-      for (const t of targets) {
-        if (t === q || t.includes(q) || q.includes(t)) {
-          return product;
+      for (const target of targets) {
+        const t = target.text;
+        let score = 0;
+        
+        // Exact match — highest priority
+        if (t === q) {
+          score = 100 * target.weight;
+        }
+        // Query exactly matches start of target
+        else if (t.startsWith(q + ' ') || t.startsWith(q)) {
+          score = 80 * target.weight;
+        }
+        // Target exactly matches start of query
+        else if (q.startsWith(t + ' ') || q.startsWith(t)) {
+          score = 70 * target.weight;
+        }
+        // All query words appear in target
+        else if (qWords.length > 1 && qWords.every(w => t.includes(w))) {
+          score = 60 * target.weight;
+        }
+        // Target contains query as substring
+        else if (t.includes(q)) {
+          score = 40 * target.weight;
+        }
+        // Query contains target as substring
+        else if (q.includes(t)) {
+          score = 30 * target.weight;
+        }
+        // Partial word match (any query word in target)
+        else if (qWords.some(w => w.length > 2 && t.includes(w))) {
+          score = 20 * target.weight;
+        }
+        
+        if (score > bestScore) {
+          bestScore = score;
+          bestMatch = product;
         }
       }
     }
-    return null;
+    
+    return bestMatch;
+  }
+  
+  // ============================================
+  // Autocomplete
+  // ============================================
+  function getAutocompleteSuggestions(query) {
+    if (!window.DUPE_DATABASE || query.length < 2) return [];
+    
+    const q = query.toLowerCase().trim();
+    const suggestions = [];
+    const seen = new Set();
+    
+    for (const product of window.DUPE_DATABASE.products) {
+      const displayName = product.brand + ' ' + product.name;
+      const searchTargets = [
+        displayName.toLowerCase(),
+        product.name.toLowerCase(),
+        ...(product.aliases || []).map(a => a.toLowerCase())
+      ];
+      
+      for (const target of searchTargets) {
+        if (target.includes(q) && !seen.has(displayName)) {
+          seen.add(displayName);
+          suggestions.push({
+            display: displayName,
+            brand: product.brand,
+            name: product.name,
+            category: product.category
+          });
+          break;
+        }
+      }
+      
+      if (suggestions.length >= 6) break;
+    }
+    
+    return suggestions;
   }
 
   // ============================================
@@ -302,6 +380,7 @@
     const query = els.searchInput.value.trim();
     if (query.length < CONFIG.minSearchLength) return;
     
+    hideAutocomplete();
     showLoading();
     
     // Small delay for perceived thoroughness
@@ -323,6 +402,86 @@
       els.searchForm.dispatchEvent(new Event('submit'));
     }
   }
+  
+  // ============================================
+  // Autocomplete Handlers
+  // ============================================
+  function handleAutocompleteInput() {
+    const query = els.searchInput.value.trim();
+    const suggestions = getAutocompleteSuggestions(query);
+    
+    if (suggestions.length === 0) {
+      hideAutocomplete();
+      return;
+    }
+    
+    autocompleteIndex = -1;
+    renderAutocomplete(suggestions);
+  }
+  
+  function handleAutocompleteKeydown(e) {
+    const items = els.autocompleteList.querySelectorAll('.autocomplete-item');
+    if (items.length === 0) return;
+    
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      autocompleteIndex = Math.min(autocompleteIndex + 1, items.length - 1);
+      updateAutocompleteSelection(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      autocompleteIndex = Math.max(autocompleteIndex - 1, -1);
+      updateAutocompleteSelection(items);
+    } else if (e.key === 'Enter' && autocompleteIndex >= 0) {
+      e.preventDefault();
+      const selected = items[autocompleteIndex];
+      if (selected) {
+        els.searchInput.value = selected.dataset.query;
+        hideAutocomplete();
+        els.searchForm.dispatchEvent(new Event('submit'));
+      }
+    } else if (e.key === 'Escape') {
+      hideAutocomplete();
+    }
+  }
+  
+  function updateAutocompleteSelection(items) {
+    items.forEach((item, i) => {
+      item.classList.toggle('active', i === autocompleteIndex);
+    });
+    if (autocompleteIndex >= 0 && items[autocompleteIndex]) {
+      items[autocompleteIndex].scrollIntoView({ block: 'nearest' });
+    }
+  }
+  
+  function renderAutocomplete(suggestions) {
+    els.autocompleteList.innerHTML = suggestions.map((s, i) => `
+      <li class="autocomplete-item" role="option" data-query="${escapeHTML(s.display)}" data-index="${i}">
+        <div class="autocomplete-item-info">
+          <span class="autocomplete-item-name">${escapeHTML(s.name)}</span>
+          <span class="autocomplete-item-brand">${escapeHTML(s.brand)}</span>
+        </div>
+        <span class="autocomplete-item-category">${escapeHTML(s.category)}</span>
+      </li>
+    `).join('');
+    
+    els.autocompleteList.classList.remove('hidden');
+    
+    // Add click handlers
+    els.autocompleteList.querySelectorAll('.autocomplete-item').forEach(item => {
+      item.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        els.searchInput.value = item.dataset.query;
+        hideAutocomplete();
+        els.searchForm.dispatchEvent(new Event('submit'));
+      });
+    });
+  }
+  
+  function hideAutocomplete() {
+    els.autocompleteList.classList.add('hidden');
+    els.autocompleteList.innerHTML = '';
+    autocompleteIndex = -1;
+  }
 
   // ============================================
   // Initialize
@@ -333,6 +492,18 @@
     els.searchForm.addEventListener('submit', handleSearch);
     els.backButton.addEventListener('click', showSearch);
     els.themeToggle.addEventListener('click', toggleTheme);
+    
+    // Autocomplete handlers
+    els.searchInput.addEventListener('input', handleAutocompleteInput);
+    els.searchInput.addEventListener('keydown', handleAutocompleteKeydown);
+    els.searchInput.addEventListener('blur', () => {
+      setTimeout(() => hideAutocomplete(), 150);
+    });
+    els.searchInput.addEventListener('focus', () => {
+      if (els.searchInput.value.length >= 2) {
+        handleAutocompleteInput();
+      }
+    });
     
     document.addEventListener('click', function(e) {
       if (e.target.classList.contains('suggestion-chip')) {
