@@ -48,83 +48,94 @@ function fetchURL(url, timeout = CONFIG.timeout) {
 }
 
 /**
- * Search YouTube via Invidious API
+ * Search YouTube via Invidious API - with fallback to search link
  */
 async function searchYouTube(query) {
   const searchQuery = encodeURIComponent(`${query} dupe affordable alternative`);
   
-  // Try multiple Invidious instances
+  // Try multiple Invidious instances (updated list)
   const instances = [
+    'https://inv.nadeko.net',
+    'https://invidious.io.lol',
+    'https://yewtu.be',
+    'https://invidious.privacydev.net',
     'https://vid.puffyan.us',
-    'https://invidious.nerdvpn.de',
-    'https://inv.nadeko.net'
   ];
   
   for (const instance of instances) {
     try {
       const url = `${instance}/api/v1/search?q=${searchQuery}&type=video&sort=relevance`;
-      const response = await fetchURL(url, 4000);
+      const response = await fetchURL(url, 2500);
       
       if (response.status === 200) {
         const results = JSON.parse(response.data);
-        return results.slice(0, 5).map(video => ({
-          platform: 'youtube',
-          videoId: video.videoId,
-          title: video.title,
-          author: video.author,
-          views: video.viewCount,
-          thumbnail: video.videoThumbnails?.[4]?.url || video.videoThumbnails?.[0]?.url,
-          url: `https://youtube.com/watch?v=${video.videoId}`,
-          duration: video.lengthSeconds,
-        }));
+        if (Array.isArray(results) && results.length > 0) {
+          return {
+            videos: results.slice(0, 5).map(video => ({
+              platform: 'youtube',
+              videoId: video.videoId,
+              title: video.title,
+              author: video.author,
+              views: video.viewCount,
+              thumbnail: video.videoThumbnails?.[4]?.url || video.videoThumbnails?.[0]?.url,
+              url: `https://youtube.com/watch?v=${video.videoId}`,
+              duration: video.lengthSeconds,
+            })),
+            searchUrl: `https://www.youtube.com/results?search_query=${searchQuery}`
+          };
+        }
       }
     } catch (e) {
       continue; // Try next instance
     }
   }
   
-  return [];
+  // Return search URL even if API fails
+  return {
+    videos: [],
+    searchUrl: `https://www.youtube.com/results?search_query=${searchQuery}`
+  };
 }
 
 /**
- * Search Reddit for discussions
+ * Search Reddit for discussions - with fallback to search link
  */
 async function searchReddit(query) {
   const searchQuery = encodeURIComponent(`${query} dupe`);
-  const subreddits = ['fragrance', 'MakeupAddiction', 'SkincareAddiction', 'beauty'];
   
   const results = [];
   
-  // Search across relevant subreddits
-  for (const sub of subreddits.slice(0, 2)) { // Limit to 2 for speed
-    try {
-      const url = `https://www.reddit.com/r/${sub}/search.json?q=${searchQuery}&restrict_sr=1&limit=3&sort=relevance&t=all`;
-      const response = await fetchURL(url, 3000);
+  // Try global Reddit search first
+  try {
+    const url = `https://www.reddit.com/search.json?q=${searchQuery}&limit=10&sort=relevance&t=all`;
+    const response = await fetchURL(url, 4000);
+    
+    if (response.status === 200) {
+      const data = JSON.parse(response.data);
+      const posts = data.data?.children || [];
       
-      if (response.status === 200) {
-        const data = JSON.parse(response.data);
-        const posts = data.data?.children || [];
-        
-        for (const post of posts) {
-          if (post.data.score > 1) { // Only include upvoted posts
-            results.push({
-              platform: 'reddit',
-              subreddit: sub,
-              title: post.data.title,
-              url: `https://reddit.com${post.data.permalink}`,
-              score: post.data.score,
-              comments: post.data.num_comments,
-              created: new Date(post.data.created_utc * 1000).toISOString(),
-            });
-          }
+      for (const post of posts) {
+        if (post.data && post.data.score > 0) {
+          results.push({
+            platform: 'reddit',
+            subreddit: post.data.subreddit,
+            title: post.data.title,
+            url: `https://reddit.com${post.data.permalink}`,
+            score: post.data.score,
+            comments: post.data.num_comments,
+            created: new Date(post.data.created_utc * 1000).toISOString(),
+          });
         }
       }
-    } catch (e) {
-      continue;
     }
+  } catch (e) {
+    console.log('[Reddit] Error:', e.message);
   }
   
-  return results.sort((a, b) => b.score - a.score).slice(0, 5);
+  return {
+    posts: results.sort((a, b) => b.score - a.score).slice(0, 5),
+    searchUrl: `https://www.reddit.com/search/?q=${searchQuery}`
+  };
 }
 
 /**
@@ -200,8 +211,8 @@ module.exports = async (req, res) => {
   try {
     // Fetch from all sources in parallel
     const [youtube, reddit, suggestions] = await Promise.all([
-      searchYouTube(query).catch(() => []),
-      searchReddit(query).catch(() => []),
+      searchYouTube(query).catch(() => ({ videos: [], searchUrl: '' })),
+      searchReddit(query).catch(() => ({ posts: [], searchUrl: '' })),
       getGoogleSuggestions(query).catch(() => []),
     ]);
     
@@ -212,17 +223,19 @@ module.exports = async (req, res) => {
       timestamp: new Date().toISOString(),
       sources: {
         youtube: {
-          found: youtube.length > 0,
-          count: youtube.length,
-          results: youtube,
+          found: youtube.videos.length > 0,
+          count: youtube.videos.length,
+          results: youtube.videos,
+          searchUrl: youtube.searchUrl,
         },
         reddit: {
-          found: reddit.length > 0,
-          count: reddit.length,
-          results: reddit,
+          found: reddit.posts.length > 0,
+          count: reddit.posts.length,
+          results: reddit.posts,
+          searchUrl: reddit.searchUrl,
         },
         tiktok: {
-          found: true, // Always has search URL
+          found: true,
           info: tiktok,
         },
         suggestions: {
@@ -233,7 +246,7 @@ module.exports = async (req, res) => {
       },
     };
     
-    console.log(`[Search API] Found: YT=${youtube.length}, Reddit=${reddit.length}, Suggestions=${suggestions.length}`);
+    console.log(`[Search API] Found: YT=${youtube.videos.length}, Reddit=${reddit.posts.length}, Suggestions=${suggestions.length}`);
     
     return res.status(200).json(response);
     

@@ -51,28 +51,8 @@ window.DUPE_DATABASE = {
       description: "Amber, woody, floral with saffron and jasmine. Iconic modern luxury scent.",
       image: "https://www.sephora.com/productimages/sku/s2221292-main-zoom.jpg",
       aliases: ["baccarat", "br540", "rouge 540", "mfk baccarat"],
-      
-      // Video content featuring this product
-      videos: [
-        {
-          platform: "youtube",
-          videoId: "dQw4w9WgXcQ",
-          title: "BEST Baccarat Rouge 540 Dupes - Affordable Alternatives",
-          author: "Beauty Community",
-          views: "250K"
-        }
-      ],
-      
-      // Social media references
-      social: {
-        tiktok: {
-          hashtags: ["#br540dupe", "#baccaratrouge540", "#perfumetok"],
-          searchUrl: "https://www.tiktok.com/search?q=baccarat%20rouge%20540%20dupe"
-        },
-        reddit: [
-          { subreddit: "fragrance", url: "https://www.reddit.com/r/fragrance/comments/br540_dupes" }
-        ]
-      },
+      appeal: "The defining luxury fragrance of the 2020s. It photographs well on social media, projects confidently, and has become synonymous with quiet wealth. The saffron-amber DNA is distinctive enough to be recognized, yet versatile enough for daily wear.",
+      honestNote: "Cloud is a legitimate alternative for everyday use, but it lacks the depth and complexity that makes BR540 a collector's piece. If you want the exact experience, the original may be worth saving for. If you want 80% of the effect at 15% of the price, Cloud delivers.",
       
       dupes: [
         {
