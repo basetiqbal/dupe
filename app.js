@@ -125,10 +125,14 @@
       img.src = product.image;
       img.alt = product.brand + ' ' + product.name;
       img.loading = 'lazy';
-      img.onerror = function() { this.parentElement.classList.add('no-image'); };
+      img.onerror = function() { 
+        this.parentElement.classList.add('no-image');
+        this.parentElement.innerHTML = '✦';
+      };
       els.originalImage.appendChild(img);
     } else {
       els.originalImage.classList.add('no-image');
+      els.originalImage.innerHTML = '✦';
     }
     
     // Why people want it
@@ -171,10 +175,15 @@
       tradeoffsHTML = `<div class="dupe-tradeoffs"><p class="tradeoffs-label">Tradeoffs</p><p class="tradeoffs-text">${escapeHTML(dupe.differences)}</p></div>`;
     }
     
+    // Image with fallback placeholder
+    const imageHTML = dupe.image 
+      ? `<img src="${escapeHTML(dupe.image)}" alt="${escapeHTML(dupe.name)}" class="dupe-image" loading="lazy" onerror="this.outerHTML='<div class=\\'dupe-image no-image\\'>✦</div>'">`
+      : '<div class="dupe-image no-image">✦</div>';
+    
     card.innerHTML = `
       <div class="dupe-rank ${rankClass}">${rankLabel}</div>
       <div class="dupe-header">
-        ${dupe.image ? `<img src="${escapeHTML(dupe.image)}" alt="${escapeHTML(dupe.name)}" class="dupe-image" loading="lazy">` : '<div class="dupe-image no-image"></div>'}
+        ${imageHTML}
         <div class="dupe-meta">
           <h3 class="dupe-name">${escapeHTML(dupe.name)}</h3>
           <p class="dupe-brand">${escapeHTML(dupe.brand)}</p>
@@ -333,6 +342,9 @@
     
     els.chips.forEach(chip => chip.addEventListener('click', handleChipClick));
     
+    // Email obfuscation for contact links
+    initContactLinks();
+    
     const urlQuery = new URL(window.location).searchParams.get('q');
     if (urlQuery) {
       els.searchInput.value = urlQuery;
@@ -354,6 +366,40 @@
     
     if (window.DUPE_DATABASE) {
       console.log('The Dupe Edit loaded. ' + window.DUPE_DATABASE.products.length + ' products analyzed.');
+    }
+  }
+  
+  // ============================================
+  // Contact Link Obfuscation
+  // ============================================
+  function initContactLinks() {
+    // Obfuscated email parts (prevents scraping)
+    const p1 = 'isfar';
+    const p2 = 'baset';
+    const p3 = 'gmail';
+    const addr = p1 + '.' + p2 + '@' + p3 + '.com';
+    
+    // Request button in no-results section
+    const requestBtn = $('#request-dupe-btn');
+    if (requestBtn) {
+      requestBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const searchQuery = els.searchInput?.value || 'Unknown product';
+        const subject = encodeURIComponent('Product Request: ' + searchQuery);
+        const body = encodeURIComponent('Hi,\n\nI\'d love to see dupes for: ' + searchQuery + '\n\nThanks!');
+        window.location.href = 'mailto:' + addr + '?subject=' + subject + '&body=' + body;
+      });
+    }
+    
+    // Footer email link
+    const footerEmail = $('#footer-email');
+    if (footerEmail) {
+      footerEmail.addEventListener('click', function(e) {
+        e.preventDefault();
+        const subject = encodeURIComponent('Product Request for The Dupe Edit');
+        const body = encodeURIComponent('Hi,\n\nI\'d love to see dupes for: [PRODUCT NAME]\n\nThanks!');
+        window.location.href = 'mailto:' + addr + '?subject=' + subject + '&body=' + body;
+      });
     }
   }
 

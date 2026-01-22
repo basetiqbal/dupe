@@ -15,8 +15,8 @@
  */
 
 window.DUPE_DATABASE = {
-  version: "2.1.0",
-  lastUpdated: "2026-01-20",
+  version: "2.2.0",
+  lastUpdated: "2026-01-21",
   
   // Retailer configuration for affiliate-ready links
   retailers: {
@@ -26,7 +26,12 @@ window.DUPE_DATABASE = {
     fragrancenet: { name: "FragranceNet", domain: "fragrancenet.com" },
     nordstrom: { name: "Nordstrom", domain: "nordstrom.com" },
     target: { name: "Target", domain: "target.com" },
-    walmart: { name: "Walmart", domain: "walmart.com" }
+    walmart: { name: "Walmart", domain: "walmart.com" },
+    tjmaxx: { name: "TJ Maxx", domain: "tjmaxx.com" },
+    marshalls: { name: "Marshalls", domain: "marshalls.com" },
+    traderjoes: { name: "Trader Joe's", domain: "traderjoes.com" },
+    costco: { name: "Costco", domain: "costco.com" },
+    ross: { name: "Ross", domain: "rossstores.com" }
   },
   
   // Social platform configuration
@@ -402,6 +407,101 @@ window.DUPE_DATABASE = {
           reason: "Aquatic-fresh with ambroxan bomb. Similar vibe, different execution.",
           differences: "More aquatic/marine. Less pepper, more water.",
           bestFor: ["Summer scent", "Aquatic lovers", "Middle Eastern option"]
+        }
+      ]
+    },
+    {
+      id: "dunhill-icon",
+      name: "Icon",
+      brand: "Dunhill",
+      category: "fragrance",
+      subcategory: "eau de parfum",
+      price: "$95–$130",
+      description: "Black pepper, neroli, cardamom, vetiver, oud, leather. Sophisticated British masculine scent.",
+      image: "https://m.media-amazon.com/images/I/51K4FJw87zL._SL1000_.jpg",
+      aliases: ["dunhill icon", "icon dunhill", "alfred dunhill icon"],
+      appeal: "A modern British gentleman's fragrance. The neroli-cardamom opening feels fresh yet substantial, while the leather-oud base adds depth. Popular among professionals seeking something distinctive but office-appropriate.",
+      honestNote: "Dunhill Icon occupies an interesting middle ground — luxury enough to feel special, but priced where dupes offer diminishing returns. The alternatives below work for those wanting the vibe at lower cost, but the original is fairly priced for what it delivers.",
+      dupes: [
+        {
+          name: "L'Homme Ideal",
+          brand: "Guerlain",
+          priceRange: "$65–$90",
+          matchScore: 72,
+          reason: "Similar sophisticated masculine profile with spicy-woody structure. Almond note adds gourmand twist.",
+          differences: "More gourmand/almond, less oud. French interpretation of similar territory.",
+          bestFor: ["Guerlain fans", "Gourmand edge", "Designer alternative"],
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/l-homme-ideal-eau-de-toilette-P398406" },
+            { name: "FragranceNet", url: "https://www.fragrancenet.com/cologne/guerlain/guerlain-l-homme-ideal" }
+          ]
+        },
+        {
+          name: "Bentley for Men Intense",
+          brand: "Bentley",
+          priceRange: "$25–$45",
+          matchScore: 75,
+          reason: "Excellent budget leather-woody option. Rich, substantial, surprisingly refined for price.",
+          differences: "Heavier on rum/boozy notes. Less fresh opening, more evening-oriented.",
+          bestFor: ["Best value", "Evening wear", "Leather lovers"],
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/Bentley-Intense-Parfum-Spray-Ounce/dp/B00FHPK6TW" },
+            { name: "FragranceNet", url: "https://www.fragrancenet.com/cologne/bentley/bentley-for-men-intense" }
+          ]
+        },
+        {
+          name: "Classic Match",
+          brand: "Belcam",
+          priceRange: "$8–$15",
+          matchScore: 65,
+          reason: "Budget-tier option found at TJ Maxx/Marshalls. Captures basic spicy-woody structure.",
+          differences: "Significantly less refined, shorter longevity. Acceptable for casual use.",
+          bestFor: ["Extreme budget", "Gym bag", "Testing the vibe"],
+          retailers: [
+            { name: "TJ Maxx", url: "https://tjmaxx.tjx.com" },
+            { name: "Amazon", url: "https://www.amazon.com/s?k=belcam+classic+match" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "dunhill-desire-blue",
+      name: "Desire Blue",
+      brand: "Dunhill",
+      category: "fragrance",
+      subcategory: "eau de toilette",
+      price: "$45–$75",
+      description: "Apple, grapefruit, jasmine, musk. Fresh aquatic-floral masculine scent.",
+      image: "https://m.media-amazon.com/images/I/61ks+2vNCvL._SL1500_.jpg",
+      aliases: ["dunhill desire blue", "desire blue", "dunhill blue"],
+      appeal: "A clean, safe, versatile blue fragrance. Performs well in professional settings and warmer weather. The jasmine note gives it a slightly unique character among blue fragrances.",
+      dupes: [
+        {
+          name: "Nautica Voyage",
+          brand: "Nautica",
+          priceRange: "$15–$25",
+          matchScore: 70,
+          reason: "Classic aquatic-fresh fragrance at drugstore price. Apple and aquatic notes align well.",
+          differences: "More ozonic/synthetic. Less floral complexity, but excellent summer performer.",
+          bestFor: ["Summer scent", "Everyday casual", "Best value"],
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/Nautica-Voyage-Spray-Men-Ounce/dp/B000P22TII" },
+            { name: "Walmart", url: "https://www.walmart.com/ip/Nautica-Voyage-Eau-de-Toilette-Cologne-for-Men-3-4-fl-oz/14965582" },
+            { name: "TJ Maxx", url: "https://tjmaxx.tjx.com" }
+          ]
+        },
+        {
+          name: "360 Blue",
+          brand: "Perry Ellis",
+          priceRange: "$20–$35",
+          matchScore: 68,
+          reason: "Budget blue fragrance with similar fresh profile. Often found discounted at TJ Maxx.",
+          differences: "Simpler composition. Good office scent but less refined.",
+          bestFor: ["Budget seekers", "Office rotation", "Discount store finds"],
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/Perry-Ellis-360-Blue-Spray/dp/B001FWXU82" },
+            { name: "TJ Maxx", url: "https://tjmaxx.tjx.com" }
+          ]
         }
       ]
     },
@@ -857,6 +957,211 @@ window.DUPE_DATABASE = {
           retailers: [
             { name: "Ulta", url: "https://www.ulta.com/p/pure-vitamin-c10-serum-pimprod2018118" },
             { name: "Amazon", url: "https://www.amazon.com/Roche-Posay-Vitamin-Anti-Aging-Sensitive-Salicylic/dp/B07XQHWCP5" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "sunday-riley-good-genes",
+      name: "Good Genes All-In-One Lactic Acid Treatment",
+      brand: "Sunday Riley",
+      category: "skincare",
+      subcategory: "serum",
+      price: "$85–$122",
+      description: "Cult-favorite lactic acid exfoliant. Brightening, smoothing, instant glow.",
+      aliases: ["good genes", "sunday riley lactic acid", "sr good genes"],
+      appeal: "The instant-glow serum that launched a thousand dupes. Lactic acid for gentle exfoliation plus licorice root for brightening. Results are genuinely visible, which is why people tolerate the price.",
+      honestNote: "Good Genes works. The question is whether you need the Sunday Riley version. Lactic acid is lactic acid — the formula matters, but the alternatives below get you 80% there.",
+      dupes: [
+        {
+          name: "Lactic Acid 10% + HA",
+          brand: "The Ordinary",
+          priceRange: "$7",
+          matchScore: 78,
+          reason: "Straightforward lactic acid at impossible-to-beat price. No frills, solid results.",
+          differences: "Simpler formula, no licorice root. Less instant-glow, more gradual improvement.",
+          bestFor: ["Best value", "The Ordinary fans", "Simple routines"],
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/the-ordinary-lactic-acid-10-ha-P427418" },
+            { name: "Ulta", url: "https://www.ulta.com/p/lactic-acid-10-ha-2-pimprod2007105" }
+          ]
+        },
+        {
+          name: "AHA 30% + BHA 2% Exfoliating Peeling Solution",
+          brand: "The Ordinary",
+          priceRange: "$9",
+          matchScore: 65,
+          reason: "Stronger weekly treatment alternative. Dramatic results for those who want more.",
+          differences: "Weekly use only (vs daily-ish). Combination of acids, not just lactic.",
+          bestFor: ["Weekly treatments", "Stronger results", "Experienced users"],
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/the-ordinary-aha-30-bha-2-exfoliating-peeling-solution-P442563" }
+          ]
+        },
+        {
+          name: "Overnight Resurfacing Peel",
+          brand: "Glow Recipe",
+          priceRange: "$45",
+          matchScore: 72,
+          reason: "AHA/BHA blend with fruit extracts. Gentler, more fun packaging, solid results.",
+          differences: "Different acid blend. Watermelon aesthetic vs clinical minimalism.",
+          bestFor: ["Glow Recipe fans", "Gentler approach", "Aesthetic preference"],
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/glow-recipe-watermelon-glow-aha-night-treatment-P460289" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "augustinus-bader-rich-cream",
+      name: "The Rich Cream",
+      brand: "Augustinus Bader",
+      category: "skincare",
+      subcategory: "moisturizer",
+      price: "$170–$290",
+      description: "Ultra-luxury moisturizer with TFC8 complex. Celeb favorite, intense hydration.",
+      aliases: ["augustinus bader", "the rich cream", "ab cream"],
+      appeal: "The skincare product celebrities actually use (and aren't just paid to post about). TFC8 technology allegedly supports cellular renewal. Whether it's better than a well-formulated drugstore cream is debated, but the texture is undeniably luxurious.",
+      honestNote: "At this price point, you're paying for exclusivity, elegant formulation, and beautiful packaging. Dermatologists generally say similar hydration can be achieved for much less. But some people love it, and that's valid too.",
+      dupes: [
+        {
+          name: "Ceramide Cream",
+          brand: "Good Molecules",
+          priceRange: "$14",
+          matchScore: 55,
+          reason: "Barrier-supporting ceramide cream at drugstore price. Different approach, solid hydration.",
+          differences: "No TFC8, different ingredient philosophy entirely. Practical vs luxurious.",
+          bestFor: ["Budget seekers", "Ceramide lovers", "Simple routines"],
+          retailers: [
+            { name: "Ulta", url: "https://www.ulta.com/p/ceramide-cream-pimprod2024507" }
+          ]
+        },
+        {
+          name: "Weleda Skin Food",
+          brand: "Weleda",
+          priceRange: "$20",
+          matchScore: 50,
+          reason: "Cult-classic rich balm. Different texture but intense hydration for dry skin.",
+          differences: "Thick balm vs cream. Natural/botanical approach. Less elegant but effective.",
+          bestFor: ["Natural beauty fans", "Very dry skin", "Multipurpose use"],
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/Weleda-Skin-Food-Original-Ultra-Rich/dp/B000ORV3NC" },
+            { name: "Target", url: "https://www.target.com/p/weleda-skin-food-2-5oz/-/A-14778628" },
+            { name: "Trader Joe's", url: "https://www.traderjoes.com" }
+          ]
+        },
+        {
+          name: "No true dupe exists",
+          brand: "—",
+          priceRange: "—",
+          matchScore: 0,
+          reason: "TFC8 is proprietary and patented. No product replicates it. You can get excellent hydration elsewhere, but not this specific technology.",
+          differences: "This is an honest acknowledgment: wanting the AB experience means buying AB.",
+          bestFor: ["Those comfortable with alternative moisturizers that hydrate differently"]
+        }
+      ]
+    },
+    {
+      id: "paula-choice-bha",
+      name: "Skin Perfecting 2% BHA Liquid Exfoliant",
+      brand: "Paula's Choice",
+      category: "skincare",
+      subcategory: "exfoliant",
+      price: "$35",
+      description: "The internet's favorite BHA. Salicylic acid for pores, blackheads, texture.",
+      aliases: ["paula's choice bha", "2% bha liquid", "pc bha"],
+      appeal: "The exfoliant that TikTok, Reddit, and dermatologists all agree on. Gentle enough for regular use, effective enough to see results. The gold standard for salicylic acid products.",
+      dupes: [
+        {
+          name: "Salicylic Acid 2% Solution",
+          brand: "The Ordinary",
+          priceRange: "$6",
+          matchScore: 80,
+          reason: "Same active ingredient concentration at fraction of price. Clean, effective, simple.",
+          differences: "Simpler formula. Some find Paula's Choice more elegant and less drying.",
+          bestFor: ["Best value", "The Ordinary fans", "Budget-conscious"],
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/the-ordinary-salicylic-acid-2-solution-P427417" },
+            { name: "Ulta", url: "https://www.ulta.com/p/salicylic-acid-2-solution-pimprod2007102" }
+          ]
+        },
+        {
+          name: "BHA Blackhead Power Liquid",
+          brand: "COSRX",
+          priceRange: "$22",
+          matchScore: 75,
+          reason: "K-beauty BHA with willow bark. Gentler salicylic acid alternative.",
+          differences: "Betaine salicylate (gentler) vs salicylic acid. Different efficacy profile.",
+          bestFor: ["Sensitive skin", "K-beauty fans", "Gentle approach"],
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/COSRX-Blackhead-Power-Liquid-100ml/dp/B00OZEJ8R8" },
+            { name: "Ulta", url: "https://www.ulta.com/p/bha-blackhead-power-liquid-pimprod2015224" }
+          ]
+        },
+        {
+          name: "SA Cleanser",
+          brand: "CeraVe",
+          priceRange: "$15",
+          matchScore: 60,
+          reason: "Salicylic acid in cleanser form. More accessible, found at any drugstore.",
+          differences: "Cleanser vs leave-on treatment. Less contact time, different efficacy.",
+          bestFor: ["Cleanser preference", "Drugstore accessibility", "Simple routines"],
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/CeraVe-Salicylic-Cleanser-Exfoliating-Fragrance/dp/B00U1YCRD8" },
+            { name: "Target", url: "https://www.target.com/p/cerave-renewing-sa-cleanser/-/A-51198401" },
+            { name: "Costco", url: "https://www.costco.com" }
+          ]
+        }
+      ]
+    },
+    {
+      id: "estee-lauder-anr",
+      name: "Advanced Night Repair Serum",
+      brand: "Estée Lauder",
+      category: "skincare",
+      subcategory: "serum",
+      price: "$80–$140",
+      description: "Iconic repair serum. Hyaluronic acid, peptides, antioxidants. Anti-aging staple.",
+      aliases: ["advanced night repair", "anr", "estee lauder serum", "brown bottle"],
+      appeal: "The 'brown bottle' has been a skincare icon for decades. Reliable anti-aging benefits, elegant texture, and department store prestige. Your mom probably used it.",
+      dupes: [
+        {
+          name: "Snail Mucin 96% Power Repairing Essence",
+          brand: "COSRX",
+          priceRange: "$22",
+          matchScore: 70,
+          reason: "K-beauty repair essence with cult following. Different ingredients, similar repair/hydration goal.",
+          differences: "Snail mucin vs peptides. Different texture and ingredient philosophy.",
+          bestFor: ["K-beauty fans", "Snail mucin believers", "Hydration focus"],
+          retailers: [
+            { name: "Amazon", url: "https://www.amazon.com/COSRX-Advanced-Snail-Mucin-Essence/dp/B00PBX3L7K" },
+            { name: "Ulta", url: "https://www.ulta.com/p/advanced-snail-96-mucin-power-essence-pimprod2007101" }
+          ]
+        },
+        {
+          name: "Multi-Peptide + HA Serum",
+          brand: "The Ordinary",
+          priceRange: "$18",
+          matchScore: 72,
+          reason: "Peptide-focused serum at budget price. Targets similar anti-aging concerns.",
+          differences: "Less elegant texture. Different supporting ingredients.",
+          bestFor: ["Budget-conscious", "The Ordinary fans", "Peptide preference"],
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/the-ordinary-multi-peptide-eye-serum-P460713" },
+            { name: "Ulta", url: "https://www.ulta.com/p/multi-peptide-ha-serum-pimprod2023923" }
+          ]
+        },
+        {
+          name: "Midnight Recovery Concentrate",
+          brand: "Kiehl's",
+          priceRange: "$58",
+          matchScore: 68,
+          reason: "Botanical night oil with similar overnight repair positioning. Different formula, similar vibe.",
+          differences: "Oil vs serum. Lavender-scented, botanical approach vs peptide science.",
+          bestFor: ["Kiehl's fans", "Oil preference", "Aromatherapy appeal"],
+          retailers: [
+            { name: "Sephora", url: "https://www.sephora.com/product/midnight-recovery-concentrate-P411389" },
+            { name: "Nordstrom", url: "https://www.nordstrom.com/s/kiehls-midnight-recovery-concentrate/3088291" }
           ]
         }
       ]

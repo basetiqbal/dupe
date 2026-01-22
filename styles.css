@@ -611,6 +611,8 @@ body {
   align-items: center;
   justify-content: center;
   color: var(--color-text-tertiary);
+  font-size: 2rem;
+  background: linear-gradient(135deg, var(--color-bg-alt) 0%, var(--color-border-light) 100%);
 }
 
 .original-product-details {
@@ -1489,6 +1491,22 @@ body {
   margin-bottom: var(--space-sm);
 }
 
+.footer-contact {
+  margin-top: var(--space-sm);
+}
+
+.footer-email {
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.footer-email:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
 .footer-disclaimer {
   font-size: 0.75rem;
   color: var(--color-text-tertiary);
@@ -2139,8 +2157,8 @@ body {
 /* Rank Badges */
 .dupe-rank {
   display: inline-block;
-  padding: 4px 12px;
-  font-size: 0.6875rem;
+  padding: 6px 14px;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.75px;
@@ -2149,8 +2167,10 @@ body {
 }
 
 .rank-best {
-  background: var(--color-accent);
+  background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
   color: #fff;
+  box-shadow: 0 2px 8px rgba(218, 165, 32, 0.3);
+  font-weight: 700;
 }
 
 .rank-strong {
@@ -2178,6 +2198,17 @@ body {
   object-fit: cover;
   border-radius: var(--radius-sm);
   background: var(--color-bg-alt);
+  flex-shrink: 0;
+}
+
+.dupe-image.no-image,
+div.dupe-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-bg-alt) 0%, var(--color-border-light) 100%);
+  color: var(--color-text-tertiary);
+  font-size: 1.5rem;
   flex-shrink: 0;
 }
 
